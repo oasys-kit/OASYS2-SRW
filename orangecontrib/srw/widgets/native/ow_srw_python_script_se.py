@@ -36,7 +36,7 @@ class SRWPythonScriptSE(OWWidget):
 
     input_srw_data=None
 
-    def __init__(self, show_automatic_box=True):
+    def __init__(self):
         super().__init__()
 
         geom = QApplication.desktop().availableGeometry()
