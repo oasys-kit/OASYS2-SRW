@@ -1,15 +1,16 @@
-import sys
 import numpy
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
-from oasys.widgets.exchange import DataExchangeObject
-from oasys.util.oasys_util import TriggerOut
+from orangewidget.widget import Input, MultiInput
 
-from syned.beamline.beamline import Beamline
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.widget_objects import TriggerOut
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
+
 from syned.widget.widget_decorator import WidgetDecorator
 
 from wofrysrw.storage_ring.light_sources.srw_3d_light_source import SRW3DLightSource
@@ -17,24 +18,22 @@ from wofrysrw.storage_ring.magnetic_structures.srw_3d_magnetic_structure import 
 
 from orangecontrib.srw.widgets.gui.ow_srw_source import OWSRWSource
 
-
 class OWSRW3DLightSource(OWSRWSource):
-
     name = "3D Light Source"
     description = "SRW Source: 3D Light Source"
     icon = "icons/3d.png"
     priority = 100
+
+    class Inputs:
+        exchange_data = MultiInput("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
+        syned_data    = WidgetDecorator.syned_input_data(multi_input=True)
+        trigger       = Input("Trigger", TriggerOut, id="Trigger", default=True, auto_summary=False)
 
     file_name = Setting("")
     comment_character = Setting("#")
     interpolation_method = Setting(0)
 
     want_main_area=1
-
-    inputs = WidgetDecorator.syned_input_data()
-    inputs.append(("SynedData#2", Beamline, "receive_syned_data"))
-    inputs.append(("ExchangeData", DataExchangeObject, "acceptExchangeData"))
-    inputs.append(("Trigger", TriggerOut, "sendNewWavefront"))
 
     def __init__(self):
         super().__init__()
@@ -55,6 +54,18 @@ class OWSRW3DLightSource(OWSRWSource):
 
         gui.rubber(self.controlArea)
         gui.rubber(self.mainArea)
+
+    @Inputs.exchange_data
+    def set_exchange_data(self, index, exchange_data):
+        self.acceptExchangeData(exchange_data)
+
+    @Inputs.exchange_data.insert
+    def insert_exchange_data(self, index, exchange_data):
+        self.acceptExchangeData(exchange_data)
+
+    @Inputs.exchange_data.remove
+    def remove_exchange_data(self, index):
+        pass
 
     def acceptExchangeData(self, exchangeData):
         if not exchangeData is None:
@@ -87,7 +98,6 @@ class OWSRW3DLightSource(OWSRWSource):
             except Exception as e:
                 QMessageBox.critical(self, "Error", str(e.args[0]), QMessageBox.Ok)
 
-
     def select3DDataFile(self):
         self.le_file_name.setText(oasysgui.selectFileFromDialog(self, self.file_name, "3D data file"))
 
@@ -119,10 +129,4 @@ class OWSRW3DLightSource(OWSRWSource):
     def receive_specific_syned_data(self, data):
         raise ValueError("Syned data not available for this kind of source")
 
-
-if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    ow = SRW3DMagneticStructure()
-    ow.show()
-    a.exec_()
-    ow.saveSettings()
+add_widget_parameters_to_module(__name__)

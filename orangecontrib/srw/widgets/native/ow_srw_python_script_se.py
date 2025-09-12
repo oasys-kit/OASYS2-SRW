@@ -1,15 +1,20 @@
 import os, sys
 
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRect
 from PyQt5.QtWidgets import QApplication, QFileDialog
+
 from orangewidget import gui
-from oasys.widgets import gui as oasysgui, widget
+from orangewidget.widget import Input
+
+from oasys2.widget.widget import OWWidget
+from oasys2.widget import gui as oasysgui
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.util.python_script import PythonConsole
 from orangecontrib.srw.util.srw_objects import SRWData
 
-class SRWPythonScriptSE(widget.OWWidget):
+class SRWPythonScriptSE(OWWidget):
 
     name = "SRW Python Script (SE)"
     description = "SRW Python Script (SE)"
@@ -20,7 +25,8 @@ class SRWPythonScriptSE(widget.OWWidget):
     category = "Data Display Tools"
     keywords = ["data", "file", "load", "read"]
 
-    inputs = [("SRWData", SRWData, "set_input")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
     WIDGET_WIDTH = 950
     WIDGET_HEIGHT = 650
@@ -95,7 +101,7 @@ class SRWPythonScriptSE(widget.OWWidget):
                                               "File " + file_name + " written to disk",
                                               QtWidgets.QMessageBox.Ok)
 
-
+    @Inputs.srw_data
     def set_input(self, srw_data):
         if not srw_data is None:
             self.input_srw_data = srw_data
@@ -111,3 +117,4 @@ class SRWPythonScriptSE(widget.OWWidget):
         else:
             QtWidgets.QMessageBox.critical(self, "Error", "Input Wavefront is None", QtWidgets.QMessageBox.Ok)
 
+add_widget_parameters_to_module(__name__)

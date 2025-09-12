@@ -1,15 +1,16 @@
-__author__ = 'labx'
-
-import os, sys, numpy
 from numpy import nan
+import sys
 
 from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QMessageBox
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
-from oasys.util.oasys_util import EmittingStream
+from orangewidget.widget import Input
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.widget_util import EmittingStream
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from syned.storage_ring.light_source import ElectronBeam
 
@@ -35,7 +36,8 @@ class OWSRWPowerDensity(SRWPowerDensityViewer):
     icon = "icons/power_density.png"
     priority = 4
 
-    inputs = [("SRWData", SRWData, "receive_srw_data")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
     want_main_area=1
 
@@ -306,6 +308,7 @@ class OWSRWPowerDensity(SRWPowerDensityViewer):
     def getYUM(self):
         return ["Y [mm]"]
 
+    @Inputs.srw_data
     def receive_srw_data(self, data):
         if not data is None:
             try:
@@ -328,3 +331,4 @@ class OWSRWPowerDensity(SRWPowerDensityViewer):
             except Exception as exception:
                 QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
 
+add_widget_parameters_to_module(__name__)

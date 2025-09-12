@@ -1,17 +1,18 @@
-__author__ = 'labx'
-
 import sys
 from numpy import nan
 
 from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QMessageBox
 from orangewidget import gui
-from orangewidget import widget
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
-from oasys.util.oasys_util import EmittingStream
-from oasys.util.oasys_util import TriggerIn, TriggerOut
+from orangewidget.widget import Input, Output
+
+from oasys2.widget.widget import OWAction
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.widget_util import EmittingStream
+from oasys2.widget.util.widget_objects import TriggerOut
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from syned.widget.widget_decorator import WidgetDecorator
 
@@ -19,10 +20,8 @@ from wofrysrw.propagator.wavefront2D.srw_wavefront import WavefrontParameters, W
 from wofrysrw.beamline.srw_beamline import SRWBeamline
 from wofrysrw.storage_ring.light_sources.srw_gaussian_light_source import SRWGaussianLightSource, Polarization
 
-from orangecontrib.srw.util.srw_util import SRWPlot
 from orangecontrib.srw.util.srw_objects import SRWData
 from orangecontrib.srw.widgets.gui.ow_srw_wavefront_viewer import SRWWavefrontViewer
-
 
 class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
 
@@ -35,13 +34,13 @@ class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
     icon = "icons/gaussian_source.png"
     priority = 10
 
-    inputs = WidgetDecorator.syned_input_data()
-    inputs.append(("Trigger", TriggerOut, "sendNewWavefront"))
 
-    outputs = [{"name":"SRWData",
-                "type":SRWData,
-                "doc":"SRW Source Data",
-                "id":"data"}]
+    class Inputs:
+        syned_data = WidgetDecorator.syned_input_data(multi_input=True)
+        trigger    = Input("Trigger", TriggerOut, id="Trigger", default=True, auto_summary=False)
+
+    class Outputs:
+        srw_data = Output("SRWData", SRWData, id="SRWData", default=True, auto_summary=False)
 
     want_main_area=1
 
@@ -77,7 +76,7 @@ class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
     def __init__(self, show_automatic_box=False):
         super().__init__(show_automatic_box=show_automatic_box)
 
-        self.runaction = widget.OWAction("Run SRW", self)
+        self.runaction = OWAction("Run SRW", self)
         self.runaction.triggered.connect(self.runSRWSource)
         self.addAction(self.runaction)
 
@@ -196,7 +195,7 @@ class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
 
             self.setStatusMessage("")
 
-            self.send("SRWData", SRWData(srw_beamline=beamline, srw_wavefront=wavefront))
+            self.Outputs.srw_data.send(SRWData(srw_beamline=beamline, srw_wavefront=wavefront))
 
         except Exception as exception:
             QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
@@ -205,6 +204,7 @@ class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
 
         self.progressBarFinished()
 
+    @Inputs.trigger
     def sendNewWavefront(self, trigger):
         if trigger and trigger.new_object == True:
             self.runSRWSource()
@@ -272,6 +272,18 @@ class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
 
         return srw_source.get_SRW_Wavefront(source_wavefront_parameters=wf_parameters)
 
+    @Inputs.syned_data
+    def set_syned_data(self, index, syned_data):
+        self.receive_syned_data(syned_data)
+
+    @Inputs.syned_data.insert
+    def insert_syned_data(self, index, syned_data):
+        self.receive_syned_data(syned_data)
+
+    @Inputs.syned_data.remove
+    def remove_syned_data(self, index):
+        pass
+
     def receive_syned_data(self, data):
         if not data is None: QMessageBox.critical(self, "Error", "Syned data not supported for Gaussian Light Source", QMessageBox.Ok)
 
@@ -300,3 +312,5 @@ class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
 
     def getYUM(self):
         return ["Y [\u03bcm]", "Y [\u03bcm]"]
+
+add_widget_parameters_to_module(__name__)

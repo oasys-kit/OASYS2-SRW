@@ -1,19 +1,19 @@
-__author__ = 'labx'
-
 import sys, numpy
 from numpy import nan
 import scipy.constants as codata
-from copy import deepcopy
 
 from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QMessageBox
 from orangewidget import gui
 from orangewidget import widget
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
-from oasys.widgets.exchange import DataExchangeObject
-from oasys.util.oasys_util import EmittingStream
+from orangewidget.widget import Input, Output
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.widget_util import EmittingStream
+from oasys2.widget.util.exchange import DataExchangeObject
 
 from syned.storage_ring.light_source import ElectronBeam
 
@@ -39,11 +39,14 @@ class OWSRWSpectrum(SRWWavefrontViewer):
     icon = "icons/spectrum.png"
     priority = 5
 
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+
+    class Outputs:
+        srw_data = Output("SRWData", DataExchangeObject, id="SRWData", default=True, auto_summary=False)
+
     inputs = [("SRWData", SRWData, "receive_srw_data")]
 
-    outputs = [{"name": "srw_data",
-                "type": DataExchangeObject,
-                "doc": ""}]
 
     want_main_area=1
 
@@ -218,7 +221,7 @@ class OWSRWSpectrum(SRWWavefrontViewer):
 
                 self.setStatusMessage("")
 
-                self.send("srw_data", self.create_exchange_data(tickets))
+                self.Outputs.srw_data.send(self.create_exchange_data(tickets))
 
             except Exception as exception:
                 QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
@@ -447,6 +450,7 @@ class OWSRWSpectrum(SRWWavefrontViewer):
         else:
             return ["Spectral Flux [ph/s/.1%bw]", "Spectral Spatial Flux Density [ph/s/.1%bw/mm\u00b2]", "Spectral Power [W/eV]", "Cumulated Power [W]"]
 
+    @Inputs.srw_data
     def receive_srw_data(self, data):
         if not data is None:
             try:
@@ -499,12 +503,4 @@ class OWSRWSpectrum(SRWWavefrontViewer):
             except Exception as exception:
                 QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
 
-
-from PyQt5.QtWidgets import QApplication
-
-if __name__=="__main__":
-    a = QApplication(sys.argv)
-    ow = OWSRWSpectrum()
-    ow.show()
-    a.exec_()
-    ow.saveSettings()
+add_widget_parameters_to_module(__name__)

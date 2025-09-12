@@ -6,17 +6,15 @@ from PyQt5.QtWidgets import QFileDialog
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
+from orangewidget.widget import Input
+from oasys2.widget import gui as oasysgui
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.util.python_script import PythonConsole
 from orangecontrib.srw.util.srw_objects import SRWData
 from orangecontrib.srw.util.srw_util import showConfirmMessage
 from orangecontrib.srw.widgets.gui.ow_srw_widget import SRWWidget
 
-from wofrysrw.storage_ring.light_sources.srw_bending_magnet_light_source import SRWBendingMagnetLightSource
-from wofrysrw.storage_ring.light_sources.srw_undulator_light_source import SRWUndulatorLightSource
-from wofrysrw.storage_ring.light_sources.srw_3d_light_source import SRW3DLightSource
-from wofrysrw.storage_ring.light_sources.srw_wiggler_light_source import SRWWigglerLightSource
 from wofrysrw.storage_ring.light_sources.srw_gaussian_light_source import SRWGaussianLightSource
 
 class SRWPythonScriptME(SRWWidget):
@@ -30,7 +28,8 @@ class SRWPythonScriptME(SRWWidget):
     category = "Data Display Tools"
     keywords = ["data", "file", "load", "read"]
 
-    inputs = [("SRWData", SRWData, "set_input")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
     input_srw_data=None
 
@@ -148,6 +147,7 @@ class SRWPythonScriptME(SRWWidget):
                                               "File " + file_name + " written to disk",
                                               QtWidgets.QMessageBox.Ok)
 
+    @Inputs.srw_data
     def set_input(self, srw_data):
         if not srw_data is None:
             self.input_srw_data = srw_data
@@ -203,3 +203,4 @@ class SRWPythonScriptME(SRWWidget):
 
                 if self.IS_DEVELOP: raise e
 
+add_widget_parameters_to_module(__name__)

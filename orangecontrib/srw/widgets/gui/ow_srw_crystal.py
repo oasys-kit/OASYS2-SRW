@@ -12,16 +12,11 @@ from orangewidget.widget import MultiInput
 
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
-
 from oasys2.widget.util.exchange import DataExchangeObject
-from oasys2.widget.util.widget_objects import TriggerOut
 
 from syned.beamline.optical_elements.crystals.crystal import Crystal
-from syned.widget.widget_decorator import WidgetDecorator
-
 from wofrysrw.beamline.optical_elements.crystals.srw_crystal import SRWCrystal
 
-from orangecontrib.srw.util.srw_objects import SRWData
 from orangecontrib.srw.widgets.gui.ow_srw_optical_element import OWSRWOpticalElement
 
 class OWSRWCrystal(OWSRWOpticalElement):

@@ -10,8 +10,11 @@ from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
+from orangewidget.widget import Input
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.util.srw_util import SRWPlot
 from orangecontrib.srw.util.srw_objects import SRWData
@@ -46,7 +49,8 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
     icon = "icons/accumulation.png"
     priority = 4
 
-    inputs = [("SRWData", SRWData, "receive_srw_data")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
     want_main_area=1
 
@@ -203,6 +207,7 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
 
             self.progressBarFinished()
 
+    @Inputs.srw_data
     def receive_srw_data(self, data):
         if not data is None:
             if isinstance(data, SRWData):
@@ -453,3 +458,4 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
 
             if self.IS_DEVELOP: raise e
 
+add_widget_parameters_to_module(__name__)

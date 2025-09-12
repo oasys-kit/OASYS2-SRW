@@ -6,7 +6,8 @@ from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QMessageBox
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
+from oasys2.widget import gui as oasysgui
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.util.srw_util import SRWPlot
 from orangecontrib.srw.widgets.gui.ow_srw_wavefront_viewer import SRWWavefrontViewer
@@ -195,5 +196,4 @@ class OWSRWIntensityPlotter(SRWWavefrontViewer):
     def getYUM(self):
         return ["Y [\u03bcm]"]
 
-
-
+add_widget_parameters_to_module(__name__)

@@ -1,10 +1,8 @@
-import sys
-
-from PyQt5.QtWidgets import QApplication
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from wofrysrw.storage_ring.light_sources.srw_bending_magnet_light_source import SRWBendingMagnetLightSource
 from wofrysrw.storage_ring.magnetic_structures.srw_bending_magnet import SRWBendingMagnet
@@ -88,10 +86,4 @@ class OWSRWBendingMagnet(OWSRWSource):
         else:
             raise ValueError("Syned data not correct")
 
-
-if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    ow = SRWBendingMagnet()
-    ow.show()
-    a.exec_()
-    ow.saveSettings()
+add_widget_parameters_to_module(__name__)
