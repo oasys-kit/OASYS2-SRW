@@ -1,16 +1,16 @@
 from orangewidget import gui
 
-from oasys.widgets import widget
+from orangewidget.widget import Input, Output
+from oasys2.widget.widget import OWWidget
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QRect
 
-from wofry.propagator.wavefront2D.generic_wavefront import GenericWavefront2D
-
 from orangecontrib.srw.util.srw_objects import SRWData
 
-class OWToWofryWavefront2d(widget.OWWidget):
+class OWToWofryWavefront2d(OWWidget):
     name = "To Wofry Wavefront 2D"
     id = "toWofryWavefront2D"
     description = "To Wofry Wavefront 2D"
@@ -19,12 +19,11 @@ class OWToWofryWavefront2d(widget.OWWidget):
     category = ""
     keywords = ["wise", "gaussian"]
 
-    inputs = [("SRWData", SRWData, "set_input")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
-    outputs = [{"name":"GenericWavefront2D",
-                "type":GenericWavefront2D,
-                "doc":"GenericWavefront2D",
-                "id":"GenericWavefront2D"}]
+    class Outputs:
+        wavefront = Output("GenericWavefront2D", object, default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 605
 
@@ -60,7 +59,7 @@ class OWToWofryWavefront2d(widget.OWWidget):
 
         gui.button(self.controlArea, self, "Convert", callback=self.convert_wavefront, height=45)
 
-
+    @Inputs.srw_data
     def set_input(self, input_data):
         self.setStatusMessage("")
 
@@ -72,8 +71,10 @@ class OWToWofryWavefront2d(widget.OWWidget):
     def convert_wavefront(self):
         try:
             if not self.srw_data is None:
-                self.send("GenericWavefront2D", self.srw_data.get_srw_wavefront().toGenericWavefront())
+                self.Outputs.wavefront.send(self.srw_data.get_srw_wavefront().toGenericWavefront())
         except Exception as exception:
             QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
 
             if self.IS_DEVELOP: raise exception
+
+add_widget_parameters_to_module(__name__)

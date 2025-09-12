@@ -1,8 +1,9 @@
-import os, sys
-
-from PyQt5.QtWidgets import QApplication
+import os
 
 import orangecanvas.resources as resources
+
+from orangewidget.widget import Output
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from syned_gui.error_profile.abstract_height_profile_simulator import OWAbstractHeightErrorProfileSimulator
 
@@ -20,10 +21,11 @@ class OWheight_profile_simulator(OWAbstractHeightErrorProfileSimulator):
     category = ""
     keywords = ["height_profile_simulator"]
 
-    outputs = [{"name": "PreProcessor_Data",
-                "type": SRWPreProcessorData,
-                "doc": "PreProcessor Data",
-                "id": "PreProcessor_Data"}]
+    class Outputs:
+        preprocessor_data = Output(name="PreProcessor Data",
+                                   type=SRWPreProcessorData,
+                                   id="PreProcessor Data",
+                                   default=True, auto_summary=False)
 
     usage_path = os.path.join(resources.package_dirname("orangecontrib.srw.widgets.gui"), "misc", "height_error_profile_usage.png")
 
@@ -41,13 +43,8 @@ class OWheight_profile_simulator(OWAbstractHeightErrorProfileSimulator):
         SU.write_error_profile_file(self.zz, self.xx, self.yy, self.heigth_profile_file_name)
 
     def send_data(self, dimension_x, dimension_y):
-        self.send("PreProcessor_Data", SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=self.heigth_profile_file_name,
-                                                                                                  error_profile_x_dim=dimension_x,
-                                                                                                  error_profile_y_dim=dimension_y)))
+        self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=self.heigth_profile_file_name,
+                                                                                                       error_profile_x_dim=dimension_x,
+                                                                                                       error_profile_y_dim=dimension_y)))
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = OWheight_profile_simulator()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_widget_parameters_to_module(__name__)

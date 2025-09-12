@@ -1,5 +1,8 @@
-from oasys.widgets import widget
-from oasys.widgets import gui as oasysgui
+from orangewidget.widget import Input
+
+from oasys2.widget.widget import OWWidget
+from oasys2.widget import gui as oasysgui
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QRect
@@ -11,16 +14,17 @@ from wofrysrw.storage_ring.light_sources.srw_gaussian_light_source import SRWGau
 from wofrysrw.storage_ring.light_sources.srw_undulator_light_source import SRWUndulatorLightSource
 from wofrysrw.storage_ring.light_sources.srw_wiggler_light_source import SRWWigglerLightSource
 
-class OWSRWInfo(widget.OWWidget):
+class OWSRWInfo(OWWidget):
     name = "Info"
     id = "OWSRWInfo"
     description = "Info"
     icon = "icons/info.png"
     priority = 35
     category = ""
-    keywords = ["wise", "gaussian"]
+    keywords = ["info", "syned"]
 
-    inputs = [("SRWData", SRWData, "set_input")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 600
     CONTROL_AREA_HEIGHT = 650
@@ -49,7 +53,7 @@ class OWSRWInfo(widget.OWWidget):
 
         self.controlArea.layout().addWidget(self.text_area)
 
-
+    @Inputs.srw_data
     def set_input(self, input_data):
         self.setStatusMessage("")
 
@@ -124,3 +128,5 @@ class OWSRWInfo(widget.OWWidget):
             QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
 
             if self.IS_DEVELOP: raise exception
+
+add_widget_parameters_to_module(__name__)

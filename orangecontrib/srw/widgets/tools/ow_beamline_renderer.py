@@ -47,6 +47,9 @@
 
 import numpy
 
+from orangewidget.widget import Input
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
+
 from orangecontrib.srw.util.srw_objects import SRWData
 
 from wofrysrw.storage_ring.light_sources.srw_bending_magnet_light_source import SRWBendingMagnetLightSource
@@ -79,13 +82,15 @@ class SRWBeamlineRenderer(AbstractBeamlineRenderer):
     category = "Utility"
     keywords = ["data", "file", "load", "read"]
 
-    inputs = [("SRWData", SRWData, "set_input")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
     srw_data = None
 
     def __init__(self):
-        super(SRWBeamlineRenderer, self).__init__(is_using_workspace_units=False)
+        super(SRWBeamlineRenderer, self).__init__()
 
+    @Inputs.srw_data
     def set_input(self, input_data):
         self.setStatusMessage("")
 
@@ -254,3 +259,4 @@ class SRWBeamlineRenderer(AbstractBeamlineRenderer):
 
             return number_of_elements, centers, limits
 
+add_widget_parameters_to_module(__name__)

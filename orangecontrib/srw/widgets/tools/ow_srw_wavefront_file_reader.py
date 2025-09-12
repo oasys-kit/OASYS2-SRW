@@ -8,16 +8,20 @@ try:
 except:
     print("Fail to import silx.gui.dialog.DataFileDialog: need silx >= 0.7")
 
-from orangewidget import gui,widget
+from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets import widget as oasyswidget
+from orangewidget.widget import Output
+
+from oasys2.widget.widget import OWWidget, OWAction
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.util.srw_objects import SRWData
 from wofrysrw.propagator.wavefront2D.srw_wavefront import SRWWavefront
 from wofrysrw.util.srw_hdf5 import load_hdf5_2_wfr
 
-class OWWavefrontFileReader(oasyswidget.OWWidget):
+class OWWavefrontFileReader(OWWidget):
     name = "SRW Wavefront File Reader"
     description = "Utility: SRW Wavefront File Reader"
     icon = "icons/file_reader.png"
@@ -32,18 +36,13 @@ class OWWavefrontFileReader(oasyswidget.OWWidget):
     file_name = Setting("")
     data_path = Setting("")
 
-
-    outputs = [{"name":"SRWData",
-                "type":SRWData,
-                "doc":"SRWData",
-                "id":"data"}
-               ]
-
+    class Outputs:
+        srw_data = Output("SRWData", SRWData, id="SRWData", default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__()
 
-        self.runaction = widget.OWAction("Read Wavefront hdf5 File", self)
+        self.runaction = OWAction("Read Wavefront hdf5 File", self)
         self.runaction.triggered.connect(self.read_file)
         self.addAction(self.runaction)
 
@@ -101,22 +100,11 @@ class OWWavefrontFileReader(oasyswidget.OWWidget):
             congruence.checkEmptyString(self.file_name, "File Name")
             congruence.checkFile(self.file_name)
             native_srw_wavefront = load_hdf5_2_wfr(self.file_name, self.data_path)
-            self.send("SRWData", SRWData(srw_wavefront=SRWWavefront.decorateSRWWF(native_srw_wavefront)))
+            self.Outputs.srw_data.send(SRWData(srw_wavefront=SRWWavefront.decorateSRWWF(native_srw_wavefront)))
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e.args[0]), QMessageBox.Ok)
 
             if self.IS_DEVELOP: raise e
 
-if __name__ == "__main__":
-    from PyQt5.QtWidgets import QApplication
-    import sys
-
-    a = QApplication(sys.argv)
-    ow = OWWavefrontFileReader()
-    # ow.file_name = "/Users/srio/OASYS_DMG/srw-scripts/hdf5/tmp_wofry.h5"
-    # ow.data_path = "/wfr2"
-    ow.file_name = "/users/srio/Oasys/tmp.h5"
-    ow.data_path = "/wfr"
-    ow.show()
-    a.exec_()
+add_widget_parameters_to_module(__name__)
 

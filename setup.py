@@ -43,6 +43,7 @@ INSTALL_REQUIRES = (
     'oasys2>=0.0.1',
     'syned-gui-2>=1.0.0',
     'wofrysrw>=1.1.30',
+    'xoppylib>=1.0.36',
     'scikit-image'
 )
 

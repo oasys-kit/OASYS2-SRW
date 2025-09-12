@@ -1,19 +1,20 @@
 import os
 
 from orangewidget import gui
-
-from oasys.widgets import widget
+from orangewidget.widget import Input, Output
+from oasys2.widget.widget import OWWidget
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QRect
 
-from oasys.util.oasys_objects import OasysPreProcessorData, OasysSurfaceData
+from oasys2.widget.util.widget_objects import OasysPreProcessorData, OasysSurfaceData
 
 from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWErrorProfileData
 import orangecontrib.srw.util.srw_util as SU
 
-class OWOasysDataConverter(widget.OWWidget):
+class OWOasysDataConverter(OWWidget):
     name = "Oasys Surface Data Converter"
     id = "oasysDataConverter"
     description = "Oasys Surface Data Converter"
@@ -22,13 +23,12 @@ class OWOasysDataConverter(widget.OWWidget):
     category = ""
     keywords = ["wise", "gaussian"]
 
-    inputs = [("Oasys PreProcessorData", OasysPreProcessorData, "set_input"),
-              ("Oasys Surface Data", OasysSurfaceData, "set_input")]
+    class Inputs:
+        preprocessor_data = Input("Oasys PreProcessor Data", OasysPreProcessorData, default=False, auto_summary=False)
+        surface_data      = Input("Oasys Surface Data", OasysSurfaceData, default=False, auto_summary=False)
 
-    outputs = [{"name": "PreProcessor_Data",
-                "type": SRWPreProcessorData,
-                "doc": "PreProcessor Data",
-                "id": "PreProcessor_Data"}]
+    class Outputs:
+        preprocessor_data = Output("PreProcessor Data", SRWPreProcessorData, default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 605
 
@@ -38,7 +38,6 @@ class OWOasysDataConverter(widget.OWWidget):
 
     def __init__(self):
         super().__init__()
-
 
         geom = QApplication.desktop().availableGeometry()
         self.setGeometry(QRect(round(geom.width()*0.05),
@@ -66,6 +65,14 @@ class OWOasysDataConverter(widget.OWWidget):
 
         gui.button(self.controlArea, self, "Convert", callback=self.convert_surface, height=45)
 
+    @Inputs.preprocessor_data
+    def set_preprocessor_data(self, preprocessor_data):
+        self.set_input(preprocessor_data)
+
+    @Inputs.surface_data
+    def set_surface_data(self, surface_data):
+        self.set_input(surface_data)
+
     def set_input(self, input_data):
         self.setStatusMessage("")
 
@@ -89,9 +96,9 @@ class OWOasysDataConverter(widget.OWWidget):
 
                     SU.write_error_profile_file(surface_data.zz, surface_data.xx, surface_data.yy, error_profile_data_file)
 
-                    self.send("PreProcessor_Data", SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=error_profile_data_file,
-                                                                                                              error_profile_x_dim=error_profile_data.error_profile_x_dim,
-                                                                                                              error_profile_y_dim=error_profile_data.error_profile_y_dim)))
+                    self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=error_profile_data_file,
+                                                                                                                   error_profile_x_dim=error_profile_data.error_profile_x_dim,
+                                                                                                                   error_profile_y_dim=error_profile_data.error_profile_y_dim)))
                 elif isinstance(self.oasys_data, OasysSurfaceData):
                     surface_data_file = self.oasys_data.surface_data_file
 
@@ -105,11 +112,13 @@ class OWOasysDataConverter(widget.OWWidget):
                     error_profile_x_dim = abs(self.oasys_data.xx[-1] - self.oasys_data.xx[0])
                     error_profile_y_dim = abs(self.oasys_data.yy[-1] - self.oasys_data.yy[0])
 
-                    self.send("PreProcessor_Data", SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=surface_data_file,
-                                                                                                              error_profile_x_dim=error_profile_x_dim,
-                                                                                                              error_profile_y_dim=error_profile_y_dim)))
+                    self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=surface_data_file,
+                                                                                                                   error_profile_x_dim=error_profile_x_dim,
+                                                                                                                   error_profile_y_dim=error_profile_y_dim)))
 
             except Exception as exception:
                 QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
 
                 if self.IS_DEVELOP: raise exception
+
+add_widget_parameters_to_module(__name__)

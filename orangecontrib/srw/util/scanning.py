@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 
 from matplotlib import cm, rcParams
-from oasys.widgets.gui import FigureCanvas3D
 from matplotlib.figure import Figure
 from matplotlib.collections import LineCollection
 from matplotlib.colors import colorConverter, ListedColormap
@@ -17,6 +16,7 @@ except:
 from orangewidget.gui import OWComponent
 
 from oasys2.widget import gui as oasysgui
+from oasys2.widget.gui import FigureCanvas3D
 from oasys2.widget.util.scanning import HistogramData
 from oasys2.widget.util.widget_util import get_sigma
 

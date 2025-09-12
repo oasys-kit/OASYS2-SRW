@@ -11,8 +11,8 @@ from orangewidget import gui
 from orangewidget.settings import Setting
 from orangewidget.widget import Input, Output
 
-from oasys2.widget import gui as oasysgui
 from oasys2.widget.widget import OWAction
+from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
 from oasys2.widget.gui import ConfirmDialog
 from oasys2.widget.util.widget_objects import TriggerIn, TriggerOut

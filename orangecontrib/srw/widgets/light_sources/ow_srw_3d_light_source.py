@@ -55,6 +55,22 @@ class OWSRW3DLightSource(OWSRWSource):
         gui.rubber(self.controlArea)
         gui.rubber(self.mainArea)
 
+    @Inputs.syned_data
+    def set_syned_data(self, index, syned_data):
+        super(OWSRW3DLightSource, self).set_syned_data(index, syned_data)
+
+    @Inputs.syned_data.insert
+    def insert_syned_data(self, index, syned_data):
+        super(OWSRW3DLightSource, self).insert_syned_data(index, syned_data)
+
+    @Inputs.syned_data.remove
+    def remove_syned_data(self, index):
+        super(OWSRW3DLightSource, self).remove_syned_data(index)
+
+    @Inputs.trigger
+    def set_trigger(self, trigger):
+        super(OWSRW3DLightSource, self).sendNewWavefront(trigger)
+
     @Inputs.exchange_data
     def set_exchange_data(self, index, exchange_data):
         self.acceptExchangeData(exchange_data)

@@ -10,9 +10,12 @@ import orangecanvas.resources as resources
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
+from orangewidget.widget import Input, Output
 
-from oasys.widgets.exchange import DataExchangeObject
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.widgets.gui.ow_srw_widget import SRWWidget
 from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWReflectivityData
@@ -34,16 +37,17 @@ class OWReflectivityGenerator(SRWWidget):
     file_name = Setting("")
     data_path = Setting("")
 
-    inputs = []
-    inputs = [("Reflectivity (Total/Unpol.)", DataExchangeObject, "set_input_1"),
-              ("Reflectivity (\u03c3)",       DataExchangeObject, "set_input_2"),
-              ("Reflectivity (\u03c0)",       DataExchangeObject, "set_input_3")]
+    class Inputs:
+        reflectivity_t = Input("Reflectivity (Total/Unpol.)", DataExchangeObject, default=True, auto_summary=False)
+        reflectivity_s = Input("Reflectivity (\u03c3)",       DataExchangeObject, default=True, auto_summary=False)
+        reflectivity_p = Input("Reflectivity (\u03c0)",       DataExchangeObject, default=True, auto_summary=False)
 
-    outputs = [{"name":"Reflectivity Data",
-                "type":SRWPreProcessorData,
-                "doc":"Reflectivity Data",
-                "id":"data"}
-               ]
+    class Outputs:
+        preprocessor_data = Output(name="Reflectivity Data",
+                                   type=SRWPreProcessorData,
+                                   id="Reflectivity Data",
+                                   default=True, auto_summary=False)
+
 
     reflectivity_data = None
     reflectivity_p_data = None
@@ -241,7 +245,7 @@ class OWReflectivityGenerator(SRWWidget):
                 file.flush()
                 file.close()
 
-            self.send("Reflectivity Data", output_data)
+            self.Outputs.preprocessor_data.send(output_data)
 
         elif not (self.reflectivity_s_data is None or self.reflectivity_p_data is None) \
                 and \
@@ -369,13 +373,13 @@ class OWReflectivityGenerator(SRWWidget):
                 file.flush()
                 file.close()
 
-            self.send("Reflectivity Data", output_data)
+            self.Outputs.preprocessor_data.send(output_data)
 
         else:
             QMessageBox.critical(self, "Error", "Incomplete Data: connect Total Polarization Data or BOTH Polarizations Data", QMessageBox.Ok)
 
-
-    def set_input_1(self, data):
+    @Inputs.reflectivity_t
+    def set_input_t(self, data):
         self.reflectivity_data : DataExchangeObject = data
 
         if not self.reflectivity_data is None and self.reflectivity_data.get_program_name() == "XOPPY":
@@ -403,7 +407,8 @@ class OWReflectivityGenerator(SRWWidget):
 
         self.plot_results()
 
-    def set_input_2(self, data):
+    @Inputs.reflectivity_s
+    def set_input_s(self, data):
         self.reflectivity_s_data : DataExchangeObject = data
 
         if not self.reflectivity_s_data is None and self.reflectivity_s_data.get_program_name() == "XOPPY":
@@ -433,7 +438,8 @@ class OWReflectivityGenerator(SRWWidget):
 
         self.main_tabs.setCurrentIndex(1)
 
-    def set_input_3(self, data):
+    @Inputs.reflectivity_p
+    def set_input_p(self, data):
         self.reflectivity_p_data = data
 
         if not self.reflectivity_p_data is None and self.reflectivity_p_data.get_program_name() == "XOPPY":
@@ -640,3 +646,5 @@ class OWReflectivityGenerator(SRWWidget):
         self.plot_canvas[plot_canvas_index].setGraphTitle(title)
 
         self.tab[tabs_canvas_index].layout().addWidget(self.plot_canvas[plot_canvas_index])
+
+add_widget_parameters_to_module(__name__)
