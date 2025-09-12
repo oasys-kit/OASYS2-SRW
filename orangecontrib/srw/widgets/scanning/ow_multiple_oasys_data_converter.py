@@ -49,18 +49,20 @@ import os
 
 from orangewidget import gui
 
-from oasys.widgets import widget
+from oasys2.widget.widget import OWWidget
+from orangewidget.widget import Output, Input
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QRect
 
-from oasys.util.oasys_objects import OasysPreProcessorData
+from oasys2.widget.util.widget_objects import OasysPreProcessorData
 
 from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWErrorProfileData
 import orangecontrib.srw.util.srw_util as SU
 
-class OWMultipleOasysDataConverter(widget.OWWidget):
+class OWMultipleOasysDataConverter(OWWidget):
     name = "Multiple Oasys Surface Data Converter"
     id = "oasysDataConverter"
     description = "Multiple Oasys Surface Data Converter"
@@ -69,16 +71,16 @@ class OWMultipleOasysDataConverter(widget.OWWidget):
     category = ""
     keywords = ["wise", "gaussian"]
 
-    inputs = [("Oasys PreProcessorData", OasysPreProcessorData, "set_input")]
+    class Inputs:
+        preprocessor_data = Input("PreProcessor Data", OasysPreProcessorData, default=True, auto_summary=False)
 
-    outputs = [{"name": "PreProcessor_Data",
-                "type": SRWPreProcessorData,
-                "doc": "PreProcessor Data",
-                "id": "PreProcessor_Data"},
-               {"name":"Files",
-                "type":list,
-                "doc":"Files",
-                "id":"Files"}]
+    class Outputs:
+        preprocessor_data = Output(name="PreProcessor Data",
+                                   type=SRWPreProcessorData,
+                                   id="PreProcessor_Data", default=True, auto_summary=False)
+        files = Output(name="Files",
+                       type=list,
+                       id="Files", default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 605
 
@@ -116,6 +118,7 @@ class OWMultipleOasysDataConverter(widget.OWWidget):
 
         gui.button(self.controlArea, self, "Convert", callback=self.convert_surface, height=45)
 
+    @Inputs.preprocessor_data
     def set_input(self, input_data):
         self.setStatusMessage("")
 
@@ -146,12 +149,14 @@ class OWMultipleOasysDataConverter(widget.OWWidget):
 
                         error_profile_data_files.append(error_profile_data_file)
 
-                    self.send("PreProcessor_Data", SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=error_profile_data_files,
-                                                                                                              error_profile_x_dim=error_profile_data.error_profile_x_dim,
-                                                                                                              error_profile_y_dim=error_profile_data.error_profile_y_dim)))
-                    self.send("Files", error_profile_data_files)
+                    self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=error_profile_data_files,
+                                                                                                                   error_profile_x_dim=error_profile_data.error_profile_x_dim,
+                                                                                                                   error_profile_y_dim=error_profile_data.error_profile_y_dim)))
+                    self.Outputs.preprocessor_data.send(error_profile_data_files)
 
             except Exception as exception:
                 QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
 
                 if self.IS_DEVELOP: raise exception
+
+add_widget_parameters_to_module(__name__)

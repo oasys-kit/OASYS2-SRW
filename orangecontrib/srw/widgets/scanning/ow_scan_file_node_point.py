@@ -48,8 +48,9 @@
 import numpy
 from orangewidget import gui
 from orangewidget.settings import Setting
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from oasys.widgets.abstract.scanning.abstract_scan_file_node_point import AbstractScanFileLoopPoint
+from oasys2.widgets.abstract.scanning.abstract_scan_file_node_point import AbstractScanFileLoopPoint
 
 VARIABLES = [
     ["height_profile_data_file", "Surface Error Profile File"],
@@ -86,12 +87,4 @@ class ScanFileLoopPoint(AbstractScanFileLoopPoint):
         self.variable_name = VARIABLES[self.variable_name_id, 0]
         self.variable_display_name = VARIABLES[self.variable_name_id, 1]
 
-import sys
-from PyQt5.QtWidgets import QApplication
-
-if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    ow = ScanFileLoopPoint()
-    ow.show()
-    a.exec_()
-    ow.saveSettings()
+add_widget_parameters_to_module(__name__)

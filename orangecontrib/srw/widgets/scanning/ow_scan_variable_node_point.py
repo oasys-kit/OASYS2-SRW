@@ -47,10 +47,9 @@
 import numpy
 from orangewidget import gui
 from orangewidget.settings import Setting
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from oasys.widgets import gui as oasysgui
-
-from oasys.widgets.abstract.scanning.abstract_scan_variable_node_point import AbstractScanVariableLoopPoint
+from oasys2.widgets.abstract.scanning.abstract_scan_variable_node_point import AbstractScanVariableLoopPoint
 
 VARIABLES = [
     ["p", "Distance from previous Continuation Plane", "m"],
@@ -103,12 +102,4 @@ class ScanVariableLoopPoint(AbstractScanVariableLoopPoint):
         self.variable_display_name = VARIABLES[self.variable_name_id, 1]
         self.variable_um = VARIABLES[self.variable_name_id, 2]
 
-import sys
-from PyQt5.QtWidgets import QApplication
-
-if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    ow = ScanVariableLoopPoint()
-    ow.show()
-    a.exec_()
-    ow.saveSettings()
+add_widget_parameters_to_module(__name__)

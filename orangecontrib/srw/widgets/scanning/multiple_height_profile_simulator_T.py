@@ -48,11 +48,12 @@
 import os
 
 import orangecanvas.resources as resources
-
+from orangewidget.widget import Output
 try:
     from mpl_toolkits.mplot3d import Axes3D  # necessario per caricare i plot 3D
 except:
     pass
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWErrorProfileData
 import orangecontrib.srw.util.srw_util as SU
@@ -70,14 +71,13 @@ class OWMultipleHeightProfileSimulatorT(OWAbstractMultipleHeightProfileSimulator
     category = ""
     keywords = ["height_profile_simulator"]
 
-    outputs = [{"name": "PreProcessor_Data",
-                "type": SRWPreProcessorData,
-                "doc": "PreProcessor Data",
-                "id": "PreProcessor_Data"},
-               {"name":"Files",
-                "type":list,
-                "doc":"Files",
-                "id":"Files"}]
+    class Outputs:
+        preprocessor_data = Output(name="PreProcessor_Data",
+                                   type=SRWPreProcessorData,
+                                   id="PreProcessor_Data", default=True, auto_summary=False)
+        files = Output(name="Files",
+                       type=list,
+                       id="Files", default=True, auto_summary=False)
 
     usage_path = os.path.join(resources.package_dirname("orangecontrib.srw.widgets.gui"), "misc", "height_error_profile_usage.png")
 
@@ -95,11 +95,12 @@ class OWMultipleHeightProfileSimulatorT(OWAbstractMultipleHeightProfileSimulator
         SU.write_error_profile_file(zz, xx, yy, outFile)
 
     def send_data(self, height_profile_file_names, dimension_x, dimension_y):
-        self.send("PreProcessor_Data", SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=height_profile_file_names,
-                                                                                                  error_profile_x_dim=dimension_x,
-                                                                                                  error_profile_y_dim=dimension_y)))
-        self.send("Files", height_profile_file_names)
-
+        self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=height_profile_file_names,
+                                                                                                       error_profile_x_dim=dimension_x,
+                                                                                                       error_profile_y_dim=dimension_y)))
+        self.Outputs.files.send(height_profile_file_names)
 
     def get_file_format(self):
         return ".dat"
+
+add_widget_parameters_to_module(__name__)

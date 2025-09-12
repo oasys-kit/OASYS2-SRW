@@ -51,19 +51,23 @@ import time
 
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QFileDialog, QInputDialog, QMessageBox
+
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
-from oasys.widgets.gui import ConfirmDialog
-from oasys.util.oasys_util import EmittingStream, TTYGrabber
+from orangewidget.widget import Input
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.gui import ConfirmDialog
+from oasys2.widget.util.widget_util import EmittingStream
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.srw.util.srw_util import SRWPlot
 from orangecontrib.srw.util.srw_objects import SRWData
 from orangecontrib.srw.widgets.gui.ow_srw_widget import SRWWidget
 
-from oasys.util.scanning_gui import StatisticalDataCollection, HistogramDataCollection, DoublePlotWidget, write_histo_and_stats_file, write_histo_and_stats_file_hdf5
-from orangecontrib.srw.util.scanning_gui import ScanHistoWidget, Scan3DHistoWidget, Column
+from oasys2.widget.util.scanning import StatisticalDataCollection, HistogramDataCollection, DoublePlotWidget, write_histo_and_stats_file, write_histo_and_stats_file_hdf5
+from orangecontrib.srw.util.scanning import ScanHistoWidget, Scan3DHistoWidget, Column
 
 from wofrysrw.propagator.wavefront2D.srw_wavefront import PolarizationComponent, TypeOfDependence
 
@@ -79,7 +83,8 @@ class Histogram(SRWWidget):
     category = "Display Data Tools"
     keywords = ["data", "file", "load", "read"]
 
-    inputs = [("SRWData", SRWData, "set_input")]
+    class Inputs:
+        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
 
     IMAGE_WIDTH = 878
     IMAGE_HEIGHT = 635
@@ -560,6 +565,7 @@ class Histogram(SRWWidget):
 
         return x, title, x_title, y_title, xum
 
+    @Inputs.srw_data
     def set_input(self, srw_data):
         if not srw_data is None:
             self.input_srw_data = srw_data
@@ -613,3 +619,5 @@ class Histogram(SRWWidget):
 
 
                 QMessageBox.information(self, "Export Scanning Results & Stats", "Data saved into directory: " + output_folder, QMessageBox.Ok)
+
+add_widget_parameters_to_module(__name__)
