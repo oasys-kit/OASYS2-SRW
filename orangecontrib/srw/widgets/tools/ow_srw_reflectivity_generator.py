@@ -573,7 +573,7 @@ class OWReflectivityGenerator(SRWWidget):
                                                                   mask=False,
                                                                   fit=False)
         self.plot_canvas[plot_canvas_index].setDefaultPlotLines(True)
-        self.plot_canvas[plot_canvas_index].setActiveCurveColor(color="#00008B")
+        self.plot_canvas[plot_canvas_index].setActiveCurveStyle(color="#00008B")
         self.plot_canvas[plot_canvas_index].setGraphTitle(title)
         self.plot_canvas[plot_canvas_index].setGraphXLabel(xtitle)
         self.plot_canvas[plot_canvas_index].setGraphYLabel(ytitle)

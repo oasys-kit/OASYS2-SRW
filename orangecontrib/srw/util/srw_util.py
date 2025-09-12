@@ -338,7 +338,7 @@ class SRWPlot:
 
             self.plot_canvas = gui.plotWindow(roi=False, control=False, position=True, logScale=True)
             self.plot_canvas.setDefaultPlotLines(True)
-            self.plot_canvas.setActiveCurveColor(color='blue')
+            self.plot_canvas.setActiveCurveStyle(color='blue')
             self.plot_canvas.setMinimumWidth(int(590*x_scale_factor))
             self.plot_canvas.setMaximumWidth(int(590*x_scale_factor))
             self.do_average = do_average
@@ -942,7 +942,7 @@ class ShowErrorProfileDialog(QDialog):
                                            control=False, position=False,
                                            roi=False, mask=False, fit=False)
             figure_canvas.setDefaultPlotLines(True)
-            figure_canvas.setActiveCurveColor(color='blue')
+            figure_canvas.setActiveCurveStyle(color='blue')
             figure_canvas.setMinimumWidth(500)
             figure_canvas.setMaximumWidth(500)
 

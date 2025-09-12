@@ -397,7 +397,7 @@ class ScanHistoWidget(AbstractScanHistoWidget):
             label.set_color('white')
             label.set_fontsize(1)
 
-        self.plot_canvas.setActiveCurveColor(color="#00008B")
+        self.plot_canvas.setActiveCurveStyle(color="#00008B")
 
         self.plot_canvas.resetZoom()
         self.plot_canvas.replot()
