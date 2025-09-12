@@ -5,6 +5,7 @@ from PyQt5.QtGui import QPixmap, QPalette, QColor, QFont
 import orangecanvas.resources as resources
 from orangewidget import gui
 from orangewidget.settings import Setting
+
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module

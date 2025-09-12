@@ -44,6 +44,7 @@ INSTALL_REQUIRES = (
     'syned-gui-2>=1.0.0',
     'wofrysrw>=1.1.30',
     'xoppylib>=1.0.36',
+    'srwpy==4.1.1',
     'scikit-image'
 )
 
