@@ -58,12 +58,12 @@ from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWErrorProfileData
 import orangecontrib.srw.util.srw_util as SU
 
-from syned_gui.error_profile.abstract_multiple_height_profile_simulator_S import OWAbstractMultipleHeightProfileSimulatorS
+from syned_gui.error_profile.abstract_multiple_height_profile_simulator_T import OWAbstractMultipleHeightProfileSimulatorT
 
-class OWMultipleHeightProfileSimulatorS(OWAbstractMultipleHeightProfileSimulatorS):
-    name = "Multiple Height Profile Simulator (S)"
-    id = "height_profile_simulator_s"
-    icon = "icons/simulator_S.png"
+class OWMultipleHeightProfileSimulatorT(OWAbstractMultipleHeightProfileSimulatorT):
+    name = "Multiple Height Profile Simulator (T)"
+    id = "height_profile_simulator_t"
+    icon = "icons/simulator_T.png"
     description = "Calculation of mirror surface height profile"
     author = "Luca Rebuffi"
     maintainer_email = "lrebuffi@anl.gov"
@@ -72,9 +72,9 @@ class OWMultipleHeightProfileSimulatorS(OWAbstractMultipleHeightProfileSimulator
     keywords = ["height_profile_simulator"]
 
     class Outputs:
-        preprocessor_data = Output(name="PreProcessor Data",
+        preprocessor_data = Output(name="PreProcessor_Data",
                                    type=SRWPreProcessorData,
-                                   id="PreProcessor Data", default=True, auto_summary=False)
+                                   id="PreProcessor_Data", default=True, auto_summary=False)
         files = Output(name="Files",
                        type=list,
                        id="Files", default=True, auto_summary=False)

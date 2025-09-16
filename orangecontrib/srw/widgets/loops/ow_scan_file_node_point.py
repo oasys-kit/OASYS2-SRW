@@ -45,62 +45,46 @@
 # POSSIBILITY OF SUCH DAMAGE.                                             #
 # #########################################################################
 
-import os
-
-import orangecanvas.resources as resources
-from orangewidget.widget import Output
-try:
-    from mpl_toolkits.mplot3d import Axes3D  # necessario per caricare i plot 3D
-except:
-    pass
+import numpy
+from orangewidget import gui
+from orangewidget.settings import Setting
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWErrorProfileData
-import orangecontrib.srw.util.srw_util as SU
+from oasys2.widgets.abstract.scanning.abstract_scan_file_node_point import AbstractScanFileLoopPoint
 
-from syned_gui.error_profile.abstract_multiple_height_profile_simulator_T import OWAbstractMultipleHeightProfileSimulatorT
+VARIABLES = [
+    ["height_profile_data_file", "Surface Error Profile File"],
+    ["reflectivity_data_file", "Reflectivity File"],
+    ["thickness_error_profile_file", "Thickness Error Profile File"]
+]
 
-class OWMultipleHeightProfileSimulatorT(OWAbstractMultipleHeightProfileSimulatorT):
-    name = "Multiple Height Profile Simulator (T)"
-    id = "height_profile_simulator_t"
-    icon = "icons/simulator_T.png"
-    description = "Calculation of mirror surface height profile"
-    author = "Luca Rebuffi"
-    maintainer_email = "lrebuffi@anl.gov"
-    priority = 3
-    category = ""
-    keywords = ["height_profile_simulator"]
+VARIABLES = numpy.array(VARIABLES)
 
-    class Outputs:
-        preprocessor_data = Output(name="PreProcessor_Data",
-                                   type=SRWPreProcessorData,
-                                   id="PreProcessor_Data", default=True, auto_summary=False)
-        files = Output(name="Files",
-                       type=list,
-                       id="Files", default=True, auto_summary=False)
+class ScanFileLoopPoint(AbstractScanFileLoopPoint):
 
-    usage_path = os.path.join(resources.package_dirname("orangecontrib.srw.widgets.gui"), "misc", "height_error_profile_usage.png")
+    name = "Scanning File Loop Point"
+    description = "Tools: LoopPoint"
+    icon = "icons/cycle_file.png"
+    maintainer = "Luca Rebuffi"
+    maintainer_email = "lrebuffi(@at@)anl.gov"
+    priority = 1.2
+    category = "User Defined"
+    keywords = ["data", "file", "load", "read"]
+
+    variable_name_id = Setting(0)
 
     def __init__(self):
-        super().__init__()
+        super(ScanFileLoopPoint, self).__init__()
 
-        if not self.heigth_profile_file_name is None:
-            if self.heigth_profile_file_name.endswith("hdf5"):
-                self.heigth_profile_file_name = self.heigth_profile_file_name[:-4] + "dat"
+    def has_variable_list(self): return True
 
-    def get_usage_path(self):
-        return self.usage_path
+    def create_variable_list_box(self, box):
+        gui.comboBox(box, self, "variable_name_id", label="Variable Name", labelWidth=120,
+                     items=VARIABLES[:, 1],
+                     callback=self.set_VariableName, sendSelectedValue=False, orientation="horizontal")
 
-    def write_error_profile_file(self, zz, xx, yy, outFile):
-        SU.write_error_profile_file(zz, xx, yy, outFile)
-
-    def send_data(self, height_profile_file_names, dimension_x, dimension_y):
-        self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=height_profile_file_names,
-                                                                                                       error_profile_x_dim=dimension_x,
-                                                                                                       error_profile_y_dim=dimension_y)))
-        self.Outputs.files.send(height_profile_file_names)
-
-    def get_file_format(self):
-        return ".dat"
+    def set_VariableName(self):
+        self.variable_name = VARIABLES[self.variable_name_id, 0]
+        self.variable_display_name = VARIABLES[self.variable_name_id, 1]
 
 add_widget_parameters_to_module(__name__)

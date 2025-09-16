@@ -67,7 +67,7 @@ class OWMultipleOasysDataConverter(OWWidget):
     id = "oasysDataConverter"
     description = "Multiple Oasys Surface Data Converter"
     icon = "icons/multiple_oasys_data_converter.png"
-    priority = 10
+    priority = 11
     category = ""
     keywords = ["wise", "gaussian"]
 

@@ -44,37 +44,51 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE         #
 # POSSIBILITY OF SUCH DAMAGE.                                             #
 # #########################################################################
-
 import numpy
 from orangewidget import gui
 from orangewidget.settings import Setting
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from oasys2.widgets.abstract.scanning.abstract_scan_file_node_point import AbstractScanFileLoopPoint
+from oasys2.widgets.abstract.scanning.abstract_scan_variable_node_point import AbstractScanVariableLoopPoint
 
 VARIABLES = [
-    ["height_profile_data_file", "Surface Error Profile File"],
-    ["reflectivity_data_file", "Reflectivity File"],
-    ["thickness_error_profile_file", "Thickness Error Profile File"]
+    ["p", "Distance from previous Continuation Plane", "m"],
+    ["q", "Distance to next Continuation Plane", "m"],
+    ["angle_radial",  "Incidence Angle", "deg"],
+    ["distance_from_first_focus_to_mirror_center", "1st focus to mirror center distance (p)", "m"],
+    ["distance_from_mirror_center_to_second_focus", "Mirror center to 2nd focus distance (q)", "m"],
+    ["radius", "Radius", "m"],
+    ["tangential_radius", "Tangential Radius", "m"],
+    ["sagittal_radius", "Sagittal Radius", "m"],
+    ["shift_x", "Horizontal Shift", "m"],
+    ["rotation_x", "Rotation Around Horizontal Axis", "deg"],
+    ["shift_y", "Vertical Shift", "m"],
+    ["rotation_y", "Rotation Around Vertical Axis", "deg"],
+    ["angle_azimuthal", "Rotation Along Beam Axis", "deg"],
+    ["height_amplification_coefficient", "Height Amplification Coefficient", ""],
+    ["width", "Slit width", "m"],
+    ["height", "Slit height", "m"],
+    ["height", "Slit radius", "m"],
+    ["thickness", "Filter Thickness", "\u03bcm"],
 ]
 
 VARIABLES = numpy.array(VARIABLES)
 
-class ScanFileLoopPoint(AbstractScanFileLoopPoint):
+class ScanVariableLoopPoint(AbstractScanVariableLoopPoint):
 
-    name = "Scanning File Loop Point"
+    name = "Scanning Variable Loop Point"
     description = "Tools: LoopPoint"
-    icon = "icons/cycle_file.png"
+    icon = "icons/cycle_variable.png"
     maintainer = "Luca Rebuffi"
     maintainer_email = "lrebuffi(@at@)anl.gov"
-    priority = 0.2
+    priority = 1.1
     category = "User Defined"
     keywords = ["data", "file", "load", "read"]
 
-    variable_name_id = Setting(0)
+    variable_name_id = Setting(8)
 
     def __init__(self):
-        super(ScanFileLoopPoint, self).__init__()
+        super(ScanVariableLoopPoint, self).__init__()
 
     def has_variable_list(self): return True
 
@@ -86,5 +100,6 @@ class ScanFileLoopPoint(AbstractScanFileLoopPoint):
     def set_VariableName(self):
         self.variable_name = VARIABLES[self.variable_name_id, 0]
         self.variable_display_name = VARIABLES[self.variable_name_id, 1]
+        self.variable_um = VARIABLES[self.variable_name_id, 2]
 
 add_widget_parameters_to_module(__name__)

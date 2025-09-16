@@ -55,8 +55,7 @@ PACKAGE_DATA = {
     "orangecontrib.srw.widgets.optical_elements":["icons/*.png", "icons/*.jpg"],
     "orangecontrib.srw.widgets.tools":["icons/*.png", "icons/*.jpg"],
     "orangecontrib.srw.widgets.native":["icons/*.png", "icons/*.jpg"],
-    "orangecontrib.srw.widgets.loop_management": ["icons/*.png", "icons/*.jpg"],
-    "orangecontrib.srw.widgets.scanning": ["icons/*.png", "icons/*.jpg"],
+    "orangecontrib.srw.widgets.loops": ["icons/*.png", "icons/*.jpg"],
 }
 
 NAMESPACE_PACAKGES = ["orangecontrib", "orangecontrib.srw", "orangecontrib.srw.widgets"]
@@ -67,8 +66,7 @@ ENTRY_POINTS = {
         "SRW Light Sources = orangecontrib.srw.widgets.light_sources",
         "SRW Optical Elements = orangecontrib.srw.widgets.optical_elements",
         "SRW Tools = orangecontrib.srw.widgets.tools",
-        "SRW Basic Loops = orangecontrib.srw.widgets.loop_management",
-        "SRW Scanning Loops = orangecontrib.srw.widgets.scanning",
+        "SRW Loops = orangecontrib.srw.widgets.loops",
         "SRW Native = orangecontrib.srw.widgets.native",
     ),
     'oasys2.menus' : ("srwmenu = orangecontrib.srw.menu",)

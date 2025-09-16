@@ -1,5 +1,3 @@
-__author__ = 'labx'
-
 import os
 import numpy
 from numpy import nan
@@ -47,7 +45,7 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
     name = "Accumulation Point"
     description = "SRW Tools: Accumulation Point"
     icon = "icons/accumulation.png"
-    priority = 4
+    priority = 1
 
     class Inputs:
         srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)

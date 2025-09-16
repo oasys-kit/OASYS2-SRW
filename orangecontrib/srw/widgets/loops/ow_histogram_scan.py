@@ -79,7 +79,7 @@ class Histogram(SRWWidget):
     icon = "icons/histogram.png"
     maintainer = "Luca Rebuffi"
     maintainer_email = "lrebuffi(@at@)anl.gov"
-    priority = 1
+    priority = 2
     category = "Display Data Tools"
     keywords = ["data", "file", "load", "read"]
 

@@ -44,62 +44,63 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE         #
 # POSSIBILITY OF SUCH DAMAGE.                                             #
 # #########################################################################
-import numpy
-from orangewidget import gui
-from orangewidget.settings import Setting
+
+import os
+
+import orangecanvas.resources as resources
+from orangewidget.widget import Output
+try:
+    from mpl_toolkits.mplot3d import Axes3D  # necessario per caricare i plot 3D
+except:
+    pass
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from oasys2.widgets.abstract.scanning.abstract_scan_variable_node_point import AbstractScanVariableLoopPoint
+from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWErrorProfileData
+import orangecontrib.srw.util.srw_util as SU
 
-VARIABLES = [
-    ["p", "Distance from previous Continuation Plane", "m"],
-    ["q", "Distance to next Continuation Plane", "m"],
-    ["angle_radial",  "Incidence Angle", "deg"],
-    ["distance_from_first_focus_to_mirror_center", "1st focus to mirror center distance (p)", "m"],
-    ["distance_from_mirror_center_to_second_focus", "Mirror center to 2nd focus distance (q)", "m"],
-    ["radius", "Radius", "m"],
-    ["tangential_radius", "Tangential Radius", "m"],
-    ["sagittal_radius", "Sagittal Radius", "m"],
-    ["shift_x", "Horizontal Shift", "m"],
-    ["rotation_x", "Rotation Around Horizontal Axis", "deg"],
-    ["shift_y", "Vertical Shift", "m"],
-    ["rotation_y", "Rotation Around Vertical Axis", "deg"],
-    ["angle_azimuthal", "Rotation Along Beam Axis", "deg"],
-    ["height_amplification_coefficient", "Height Amplification Coefficient", ""],
-    ["width", "Slit width", "m"],
-    ["height", "Slit height", "m"],
-    ["height", "Slit radius", "m"],
-    ["thickness", "Filter Thickness", "\u03bcm"],
-]
+from syned_gui.error_profile.abstract_multiple_height_profile_simulator_S import OWAbstractMultipleHeightProfileSimulatorS
 
-VARIABLES = numpy.array(VARIABLES)
+class OWMultipleHeightProfileSimulatorS(OWAbstractMultipleHeightProfileSimulatorS):
+    name = "Multiple Height Profile Simulator (S)"
+    id = "height_profile_simulator_s"
+    icon = "icons/simulator_S.png"
+    description = "Calculation of mirror surface height profile"
+    author = "Luca Rebuffi"
+    maintainer_email = "lrebuffi@anl.gov"
+    priority = 5
+    category = ""
+    keywords = ["height_profile_simulator"]
 
-class ScanVariableLoopPoint(AbstractScanVariableLoopPoint):
+    class Outputs:
+        preprocessor_data = Output(name="PreProcessor Data",
+                                   type=SRWPreProcessorData,
+                                   id="PreProcessor Data", default=True, auto_summary=False)
+        files = Output(name="Files",
+                       type=list,
+                       id="Files", default=True, auto_summary=False)
 
-    name = "Scanning Variable Loop Point"
-    description = "Tools: LoopPoint"
-    icon = "icons/cycle_variable.png"
-    maintainer = "Luca Rebuffi"
-    maintainer_email = "lrebuffi(@at@)anl.gov"
-    priority = 0.1
-    category = "User Defined"
-    keywords = ["data", "file", "load", "read"]
-
-    variable_name_id = Setting(8)
+    usage_path = os.path.join(resources.package_dirname("orangecontrib.srw.widgets.gui"), "misc", "height_error_profile_usage.png")
 
     def __init__(self):
-        super(ScanVariableLoopPoint, self).__init__()
+        super().__init__()
 
-    def has_variable_list(self): return True
+        if not self.heigth_profile_file_name is None:
+            if self.heigth_profile_file_name.endswith("hdf5"):
+                self.heigth_profile_file_name = self.heigth_profile_file_name[:-4] + "dat"
 
-    def create_variable_list_box(self, box):
-        gui.comboBox(box, self, "variable_name_id", label="Variable Name", labelWidth=120,
-                     items=VARIABLES[:, 1],
-                     callback=self.set_VariableName, sendSelectedValue=False, orientation="horizontal")
+    def get_usage_path(self):
+        return self.usage_path
 
-    def set_VariableName(self):
-        self.variable_name = VARIABLES[self.variable_name_id, 0]
-        self.variable_display_name = VARIABLES[self.variable_name_id, 1]
-        self.variable_um = VARIABLES[self.variable_name_id, 2]
+    def write_error_profile_file(self, zz, xx, yy, outFile):
+        SU.write_error_profile_file(zz, xx, yy, outFile)
+
+    def send_data(self, height_profile_file_names, dimension_x, dimension_y):
+        self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=height_profile_file_names,
+                                                                                                       error_profile_x_dim=dimension_x,
+                                                                                                       error_profile_y_dim=dimension_y)))
+        self.Outputs.files.send(height_profile_file_names)
+
+    def get_file_format(self):
+        return ".dat"
 
 add_widget_parameters_to_module(__name__)
