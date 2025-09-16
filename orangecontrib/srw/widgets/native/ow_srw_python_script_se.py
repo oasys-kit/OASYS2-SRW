@@ -114,7 +114,5 @@ class SRWPythonScriptSE(OWWidget):
                 self.pythonScript.setText("Problem in writing python script:\n" + str(sys.exc_info()[0]) + ": " + str(sys.exc_info()[1]))
 
                 if self.IS_DEVELOP: raise e
-        else:
-            QtWidgets.QMessageBox.critical(self, "Error", "Input Wavefront is None", QtWidgets.QMessageBox.Ok)
 
 add_widget_parameters_to_module(__name__)
