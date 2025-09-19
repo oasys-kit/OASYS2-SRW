@@ -5,13 +5,13 @@ import scipy.constants as codata
 from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QMessageBox
 from orangewidget import gui
-from orangewidget import widget
 from orangewidget.settings import Setting
 from orangewidget.widget import Input, Output
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
+from oasys2.widget.widget import OWAction
 from oasys2.widget.util.widget_util import EmittingStream
 from oasys2.widget.util.exchange import DataExchangeObject
 
@@ -108,7 +108,7 @@ class OWSRWSpectrum(SRWWavefrontViewer):
 
         self.general_options_box.setVisible(False)
 
-        self.runaction = widget.OWAction("Calculated Spectrum", self)
+        self.runaction = OWAction("Calculated Spectrum", self)
         self.runaction.triggered.connect(self.calculateRadiation)
         self.addAction(self.runaction)
 

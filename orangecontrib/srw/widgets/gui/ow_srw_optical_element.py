@@ -846,7 +846,7 @@ class OWSRWOpticalElement(SRWWavefrontViewer, WidgetDecorator):
     def callResetSettings(self):
         if ConfirmDialog.confirmed(parent=self, message="Confirm Reset of the Fields?"):
             try:
-                self.resetSettings()
+                self._reset_settings()
             except:
                 pass
 

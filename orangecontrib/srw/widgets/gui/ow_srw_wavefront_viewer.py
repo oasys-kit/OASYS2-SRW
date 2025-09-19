@@ -18,7 +18,9 @@ from orangewidget.settings import Setting
 
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
+
 from silx.gui.plot.StackView import StackViewMainWindow
+from silx.gui.colors import Colormap
 
 from wofry.propagator.propagator import PropagationManager, WavefrontDimension
 from wofrysrw.propagator.propagators2D.srw_fresnel_native import FresnelSRWNative, SRW_APPLICATION
@@ -327,7 +329,11 @@ class SRWWavefrontViewer(SRWWidget):
 
         data_to_plot = numpy.swapaxes(data3D, 1, 2)
 
-        colormap = {"name":"temperature", "normalization":"linear", "autoscale":True, "vmin":0, "vmax":0, "colors":256}
+        colormap = Colormap(name="temperature",
+                            normalization="linear",
+                            autoscaleMode="minmax",
+                            vmin=None,
+                            vmax=None)
 
         self.plot_canvas[plot_canvas_index].setGraphTitle(title)
         self.plot_canvas[plot_canvas_index].setLabels(["Photon Energy [eV]",ytitle,xtitle])
