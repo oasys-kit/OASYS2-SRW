@@ -69,11 +69,10 @@ class OWSRWUndulator(OWSRWSource):
         left_box_3 = oasysgui.createTabPage(tabs, "ID Magnetic Field")
 
         oasysgui.lineEdit(left_box_2, self, "period_length", "Period Length [m]", labelWidth=260, valueType=float, orientation="horizontal", callback=self.set_harmonic_energy)
-        oasysgui.lineEdit(left_box_2, self, "number_of_periods", "Number of Periods", labelWidth=260, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_2, self, "number_of_periods", "Number of Periods", labelWidth=260, valueType=int, orientation="horizontal")
         oasysgui.lineEdit(left_box_2, self, "horizontal_central_position", "Horizontal Central Position [m]", labelWidth=260, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2, self, "vertical_central_position", "Vertical Central Position [m]", labelWidth=260, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2, self, "longitudinal_central_position", "Longitudinal Central Position [m]", labelWidth=260, valueType=float, orientation="horizontal")
-
 
         gui.comboBox(left_box_3, self, "magnetic_field_from", label="Magnetic Field", labelWidth=350,
                      items=["From K", "From B"],
@@ -317,11 +316,11 @@ class OWSRWUndulator(OWSRWSource):
         if isinstance(data._light_source._magnetic_structure, Undulator):
             light_source = data._light_source
 
-            self.K_horizontal = light_source._magnetic_structure._K_horizontal
-            self.K_vertical = light_source._magnetic_structure._K_vertical
+            self.K_horizontal        = light_source._magnetic_structure._K_horizontal
+            self.K_vertical          = light_source._magnetic_structure._K_vertical
             self.magnetic_field_from = 0
-            self.period_length = light_source._magnetic_structure._period_length
-            self.number_of_periods = light_source._magnetic_structure._number_of_periods
+            self.period_length       = light_source._magnetic_structure._period_length
+            self.number_of_periods   = int(light_source._magnetic_structure._number_of_periods)
 
             self.set_MagneticField()
         else:
