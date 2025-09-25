@@ -4,6 +4,7 @@ import orangecanvas.resources as resources
 
 from orangewidget.widget import Output
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
+from oasys2.widget import gui as oasysgui
 
 from syned_gui.error_profile.abstract_dabam_height_profile import OWAbstractDabamHeightProfile
 
@@ -39,6 +40,12 @@ class OWdabam_height_profile(OWAbstractDabamHeightProfile):
 
     def get_usage_path(self):
         return self.usage_path
+
+    def selectFile(self):
+        self.le_heigth_profile_file_name.setText(oasysgui.selectSaveFileFromDialog(self, "Save as Output File",
+                                                                                   default_file_name="mirror_error_profile.dat",
+                                                                                   file_extension_filter="SRW Data Files (*.dat)"))
+
 
     def write_error_profile_file(self):
         SU.write_error_profile_file(self.zz, self.xx, self.yy, self.heigth_profile_file_name)

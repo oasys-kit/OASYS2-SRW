@@ -4,7 +4,7 @@ import orangecanvas.resources as resources
 
 from orangewidget.widget import Output
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
-
+from oasys2.widget import gui as oasysgui
 from syned_gui.error_profile.abstract_height_profile_simulator import OWAbstractHeightErrorProfileSimulator
 
 from orangecontrib.srw.util.srw_objects import SRWPreProcessorData, SRWErrorProfileData
@@ -46,5 +46,10 @@ class OWheight_profile_simulator(OWAbstractHeightErrorProfileSimulator):
         self.Outputs.preprocessor_data.send(SRWPreProcessorData(error_profile_data=SRWErrorProfileData(error_profile_data_file=self.heigth_profile_file_name,
                                                                                                        error_profile_x_dim=dimension_x,
                                                                                                        error_profile_y_dim=dimension_y)))
+
+    def selectFile(self):
+        self.le_heigth_profile_file_name.setText(oasysgui.selectSaveFileFromDialog(self, "Save as Output File",
+                                                                                   default_file_name="mirror_error_profile.dat",
+                                                                                   file_extension_filter="SRW Data Files (*.dat)"))
 
 add_widget_parameters_to_module(__name__)
