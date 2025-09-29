@@ -394,15 +394,18 @@ class SRWPlot:
             if (n_patches > 0): self.plot_canvas._backend.ax.patches[n_patches-1].remove()
 
             if not ticket['fwhm'] == 0.0:
-                x_fwhm_i, x_fwhm_f = ticket['fwhm_coordinates']
-                x_fwhm_i, x_fwhm_f = x_fwhm_i*factor, x_fwhm_f*factor
-                y_fwhm             = ticket['fwhm_quote']
+                try:
+                    x_fwhm_i, x_fwhm_f = ticket['fwhm_coordinates']
+                    x_fwhm_i, x_fwhm_f = x_fwhm_i*factor, x_fwhm_f*factor
+                    y_fwhm             = ticket['fwhm_quote']
 
-                self.plot_canvas._backend.ax.add_patch(FancyArrowPatch([x_fwhm_i, y_fwhm],
-                                                          [x_fwhm_f, y_fwhm],
-                                                          arrowstyle=ArrowStyle.CurveAB(head_width=2, head_length=4),
-                                                          color='b',
-                                                          linewidth=1.5))
+                    self.plot_canvas._backend.ax.add_patch(FancyArrowPatch([x_fwhm_i, y_fwhm],
+                                                              [x_fwhm_f, y_fwhm],
+                                                              arrowstyle=ArrowStyle.CurveAB(head_width=2, head_length=4),
+                                                              color='b',
+                                                              linewidth=1.5))
+                except:
+                    pass
             if min(histogram) < 0:
                 self.plot_canvas.setGraphYLimits(min(histogram), max(histogram))
             else:
@@ -412,15 +415,15 @@ class SRWPlot:
 
             self.info_box.total.setText("{:.2e}".format(decimal.Decimal(float(ticket['total']))))
             self.info_box.total_2.setText("{:.2e}".format(decimal.Decimal(float(ticket['total']))))
-            self.info_box.fwhm_h.setText("{:5.4f}".format(ticket['fwhm']*factor))
+            self.info_box.fwhm_h.setText("NaN" if ticket['fwhm'] is None else "{:5.4f}".format(ticket['fwhm']*factor))
             self.info_box.label_h.setText("FWHM " + xum)
-            self.info_box.sigma_h.setText("{:5.4f}".format(ticket['sigma']*factor))
+            self.info_box.sigma_h.setText("NaN" if ticket['sigma'] is None else "{:5.4f}".format(ticket['sigma']*factor))
             self.info_box.label_s_h.setText("\u03c3 " + xum)
-            self.info_box.centroid_h.setText("{:5.4f}".format(ticket['centroid']*factor))
+            self.info_box.centroid_h.setText("NaN" if ticket['centroid'] is None else "{:5.4f}".format(ticket['centroid']*factor))
             self.info_box.label_c_h.setText("centroid " + xum)
             self.info_box.boundary_h.setText("{:5.4f}, {:5.4f}".format(min(bins), max(bins)))
             self.info_box.label_b_h.setText("Range " + xum)
-            if self.do_average: self.info_box.average.setText("{:5.4f}".format(ticket['average']))
+            if self.do_average: self.info_box.average.setText("NaN" if ticket['average'] is None else "{:5.4f}".format(ticket['average']))
 
         def clear(self):
             self.plot_canvas.clear()
@@ -545,33 +548,42 @@ class SRWPlot:
             if (n_patches > 0): self.plot_canvas._histoHPlot._backend.ax.patches[n_patches-1].remove()
 
             if not ticket['fwhm_h'] == 0.0:
-                x_fwhm_i, x_fwhm_f = ticket['fwhm_coordinates_h']
-                x_fwhm_i, x_fwhm_f = x_fwhm_i*factor1, x_fwhm_f*factor1
-                y_fwhm = ticket['fwhm_quote_h']
+                try:
+                    x_fwhm_i, x_fwhm_f = ticket['fwhm_coordinates_h']
+                    x_fwhm_i, x_fwhm_f = x_fwhm_i*factor1, x_fwhm_f*factor1
+                    y_fwhm = ticket['fwhm_quote_h']
 
-                self.plot_canvas._histoHPlot._backend.ax.add_patch(FancyArrowPatch([x_fwhm_i, y_fwhm],
-                                                                     [x_fwhm_f, y_fwhm],
-                                                                     arrowstyle=ArrowStyle.CurveAB(head_width=2, head_length=4),
-                                                                     color='b',
-                                                                     linewidth=1.5))
+                    self.plot_canvas._histoHPlot._backend.ax.add_patch(FancyArrowPatch([x_fwhm_i, y_fwhm],
+                                                                         [x_fwhm_f, y_fwhm],
+                                                                         arrowstyle=ArrowStyle.CurveAB(head_width=2, head_length=4),
+                                                                         color='b',
+                                                                         linewidth=1.5))
+                except:
+                    pass
 
             n_patches = len(self.plot_canvas._histoVPlot._backend.ax.patches)
             if (n_patches > 0): self.plot_canvas._histoVPlot._backend.ax.patches[n_patches-1].remove()
 
             if not ticket['fwhm_v'] == 0.0:
-                y_fwhm_i, y_fwhm_f = ticket['fwhm_coordinates_v']
-                y_fwhm_i, y_fwhm_f = y_fwhm_i*factor2, y_fwhm_f*factor2
-                x_fwhm = ticket['fwhm_quote_v']
+                try:
+                    y_fwhm_i, y_fwhm_f = ticket['fwhm_coordinates_v']
+                    y_fwhm_i, y_fwhm_f = y_fwhm_i*factor2, y_fwhm_f*factor2
+                    x_fwhm = ticket['fwhm_quote_v']
 
-                self.plot_canvas._histoVPlot._backend.ax.add_patch(FancyArrowPatch([x_fwhm, y_fwhm_i],
-                                                                     [x_fwhm, y_fwhm_f],
-                                                                     arrowstyle=ArrowStyle.CurveAB(head_width=2, head_length=4),
-                                                                     color='r',
-                                                                     linewidth=1.5))
+                    self.plot_canvas._histoVPlot._backend.ax.add_patch(FancyArrowPatch([x_fwhm, y_fwhm_i],
+                                                                         [x_fwhm, y_fwhm_f],
+                                                                         arrowstyle=ArrowStyle.CurveAB(head_width=2, head_length=4),
+                                                                         color='r',
+                                                                         linewidth=1.5))
+                except:
+                    pass
 
-            self.plot_canvas._histoHPlot.replot()
-            self.plot_canvas._histoVPlot.replot()
-            self.plot_canvas.replot()
+            try: self.plot_canvas._histoHPlot.replot()
+            except: pass
+            try: self.plot_canvas._histoVPlot.replot()
+            except: pass
+            try: self.plot_canvas.replot()
+            except: pass
 
             if not (numpy.logical_and(numpy.min(data_to_plot)>= -numpy.pi, numpy.max(data_to_plot)<=numpy.pi)):
                 dx = (xx[1]-xx[0]) # mm
@@ -583,23 +595,23 @@ class SRWPlot:
 
             self.info_box.total.setText("{:.3e}".format(decimal.Decimal(total_flux)))
             self.info_box.total_2.setText("{:.3e}".format(decimal.Decimal(total_flux)))
-            self.info_box.fwhm_h.setText("{:5.4f}".format(ticket['fwhm_h'] * factor1))
-            self.info_box.fwhm_v.setText("{:5.4f}".format(ticket['fwhm_v'] * factor2))
+            self.info_box.fwhm_h.setText("NaN" if ticket['fwhm_h'] is None else "{:5.4f}".format(ticket['fwhm_h'] * factor1))
+            self.info_box.fwhm_v.setText("NaN" if ticket['fwhm_v'] is None else "{:5.4f}".format(ticket['fwhm_v'] * factor2))
             self.info_box.label_h.setText("FWHM " + xum)
             self.info_box.label_v.setText("FWHM " + yum)
-            self.info_box.sigma_h.setText("{:5.4f}".format(ticket['sigma_h']*factor1))
-            self.info_box.sigma_v.setText("{:5.4f}".format(ticket['sigma_v']*factor2))
+            self.info_box.sigma_h.setText("NaN" if ticket['sigma_h'] is None else "{:5.4f}".format(ticket['sigma_h']*factor1))
+            self.info_box.sigma_v.setText("NaN" if ticket['sigma_v'] is None else "{:5.4f}".format(ticket['sigma_v']*factor2))
             self.info_box.label_s_h.setText("\u03c3 " + xum)
             self.info_box.label_s_v.setText("\u03c3 " + yum)
-            self.info_box.centroid_h.setText("{:5.4f}".format(ticket['centroid_h'] * factor1))
-            self.info_box.centroid_v.setText("{:5.4f}".format(ticket['centroid_v'] * factor2))
+            self.info_box.centroid_h.setText("NaN" if ticket['centroid_h'] is None else "{:5.4f}".format(ticket['centroid_h'] * factor1))
+            self.info_box.centroid_v.setText("NaN" if ticket['centroid_v'] is None else "{:5.4f}".format(ticket['centroid_v'] * factor2))
             self.info_box.label_c_h.setText("centroid " + xum)
             self.info_box.label_c_v.setText("centroid " + yum)
             self.info_box.boundary_h.setText("{:5.4f}, {:5.4f}".format(xmin*factor1, xmax*factor1))
             self.info_box.boundary_v.setText("{:5.4f}, {:5.4f}".format(ymin*factor2, ymax*factor2))
             self.info_box.label_b_h.setText("Range " + xum)
             self.info_box.label_b_v.setText("Range " + yum)
-            if self.do_average: self.info_box.average.setText("{:5.4f}".format(ticket['average']))
+            if self.do_average: self.info_box.average.setText("NaN" if ticket['average'] is None else "{:5.4f}".format(ticket['average']))
 
             self.info_box.set_multi_energy(is_multi_energy)
 
@@ -689,8 +701,10 @@ class SRWPlot:
             self.plot_canvas._histoHPlot.setGraphYLabel('A.U.')
             self.plot_canvas._histoVPlot.setGraphXLabel('A.U.')
 
-            self.plot_canvas._histoHPlot.replot()
-            self.plot_canvas._histoVPlot.replot()
+            try: self.plot_canvas._histoHPlot.replot()
+            except: pass
+            try: self.plot_canvas._histoVPlot.replot()
+            except: pass
 
             self.info_box.clear()
 
@@ -953,7 +967,8 @@ class ShowErrorProfileDialog(QDialog):
             figure_canvas.setGraphYLabel("Height Error [nm]")
             figure_canvas.setGraphTitle("Height Error Profile")
 
-            figure_canvas.replot()
+            try: figure_canvas.replot()
+            except: pass
 
             bbox = QDialogButtonBox(QDialogButtonBox.Ok)
 
