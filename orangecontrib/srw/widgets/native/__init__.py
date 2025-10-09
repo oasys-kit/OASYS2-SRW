@@ -17,4 +17,4 @@ BACKGROUND = "#b8bcdb"
 
 ICON = "icons/native.png"
 
-PRIORITY = 204
+PRIORITY = 6.4

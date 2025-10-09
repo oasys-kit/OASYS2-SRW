@@ -17,4 +17,4 @@ BACKGROUND = "#b8bcdb"
 
 ICON = "icons/loops.png"
 
-PRIORITY = 203.1
+PRIORITY = 6.3

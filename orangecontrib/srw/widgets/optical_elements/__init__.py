@@ -17,4 +17,4 @@ BACKGROUND = "#b8bcdb"
 
 ICON = "icons/opticalElements.png"
 
-PRIORITY = 202
+PRIORITY = 6.1
