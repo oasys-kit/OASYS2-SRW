@@ -13,6 +13,7 @@ from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
 from oasys2.widget.util.widget_util import EmittingStream
 from oasys2.widget.util.widget_objects import TriggerOut
+from oasys2.widget.gui import ConfirmDialog
 
 from syned.beamline.optical_elements.absorbers.slit import Slit
 from syned.storage_ring.light_source import ElectronBeam, LightSource
@@ -65,15 +66,15 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
     moment_ypyp         = Setting((1.5e-06)**2)
 
     horizontal_emittance = Setting(0.0)
-    horizontal_beta = Setting(0.0)
-    horizontal_alpha = Setting(0.0)
-    horizontal_eta = Setting(0.0)
-    horizontal_etap   = Setting(0.0)
-    vertical_emittance= Setting(0.0)
-    vertical_beta     = Setting(0.0)
-    vertical_alpha    = Setting(0.0)
-    vertical_eta = Setting(0.0)
-    vertical_etap = Setting(0.0)
+    horizontal_beta      = Setting(0.0)
+    horizontal_alpha     = Setting(0.0)
+    horizontal_eta       = Setting(0.0)
+    horizontal_etap      = Setting(0.0)
+    vertical_emittance   = Setting(0.0)
+    vertical_beta        = Setting(0.0)
+    vertical_alpha       = Setting(0.0)
+    vertical_eta         = Setting(0.0)
+    vertical_etap        = Setting(0.0)
 
     type_of_properties = Setting(1)
     type_of_initialization = Setting(0)
@@ -187,13 +188,13 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         gui.separator(left_box_2_3_r)
 
         oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_emittance", "Emittance x [m]", labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_beta"     , "\u03B2x [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_alpha"    , "\u03B1x [rad]"    , labelWidth=100, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_beta"     , "\u03B2x [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_eta"      , "\u03B7x [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_etap"     , "\u03B7x' [rad]"   , labelWidth=100, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2_3_r, self, "vertical_emittance"  , "Emittance y [m]", labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_beta"       , "\u03B2y [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2_3_r, self, "vertical_alpha"      , "\u03B1y [rad]"    , labelWidth=100, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_beta"       , "\u03B2y [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2_3_r, self, "vertical_eta"        , "\u03B7y [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(left_box_2_3_r, self, "vertical_etap"       , "\u03B7y' [rad]"   , labelWidth=100, valueType=float, orientation="horizontal")
 
@@ -303,38 +304,31 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
 
         try:
             self.checkFields()
+            electron_beam = self.get_electron_beam()
 
-            srw_source = self.get_srw_source(self.get_electron_beam())
-            srw_source.name = self.source_name if not self.source_name is None else self.windowTitle(),
+            if not electron_beam is None: # User decided to stop the calculation of the twiss from momenta or size/div
+                srw_source      = self.get_srw_source(electron_beam)
+                srw_source.name = self.source_name if not self.source_name is None else self.windowTitle(),
 
-            self.progressBarSet(10)
+                self.progressBarSet(10)
+                self.setStatusMessage("Running SRW")
+                sys.stdout = EmittingStream(textWritten=self.writeStdOut)
+                self.print_specific_infos(srw_source)
+                self.progressBarSet(20)
+                self.setStatusMessage("")
 
-            self.setStatusMessage("Running SRW")
+                beamline = SRWBeamline(light_source=srw_source)
+                self.output_wavefront = self.calculate_wavefront_propagation(srw_source)
 
-            sys.stdout = EmittingStream(textWritten=self.writeStdOut)
+                if self.is_do_plots():
+                    self.setStatusMessage("Plotting Results")
+                    tickets = []
+                    self.run_calculation_for_plots(tickets, 50)
+                    self.plot_results(tickets, 80)
 
-            self.print_specific_infos(srw_source)
+                self.setStatusMessage("")
 
-            self.progressBarSet(20)
-
-            self.setStatusMessage("")
-
-            beamline = SRWBeamline(light_source=srw_source)
-            self.output_wavefront = self.calculate_wavefront_propagation(srw_source)
-
-
-            if self.is_do_plots():
-                self.setStatusMessage("Plotting Results")
-
-                tickets = []
-
-                self.run_calculation_for_plots(tickets, 50)
-
-                self.plot_results(tickets, 80)
-
-            self.setStatusMessage("")
-
-            self.Outputs.srw_data.send(SRWData(srw_beamline=beamline, srw_wavefront=self.output_wavefront))
+                self.Outputs.srw_data.send(SRWData(srw_beamline=beamline, srw_wavefront=self.output_wavefront))
 
         except Exception as exception:
             QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
@@ -348,6 +342,12 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         if trigger and trigger.new_object == True:
             self.runSRWSource()
 
+    def check_twiss_change(self, electron_beam: ElectronBeam):
+        return self.horizontal_eta != electron_beam._dispersion_x or \
+               self.vertical_eta != electron_beam._dispersion_y or \
+               self.horizontal_etap != electron_beam._dispersionp_x or \
+               self.vertical_etap != electron_beam._dispersionp_y
+
     def get_electron_beam(self):
         if self.type_of_initialization == 2:
             electron_beam = SRWElectronBeam(energy_in_GeV=numpy.random.normal(self.electron_energy_in_GeV,
@@ -358,84 +358,100 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
             electron_beam = SRWElectronBeam(energy_in_GeV=self.electron_energy_in_GeV,
                                             energy_spread=self.electron_energy_spread,
                                             current=self.ring_current)
-
+        
+        # initialization of second moments
         if self.type_of_properties == 0:
-            electron_beam._moment_xx = self.moment_xx
-            electron_beam._moment_xxp = self.moment_xxp
-            electron_beam._moment_xpxp = self.moment_xpxp
-            electron_beam._moment_yy = self.moment_yy
-            electron_beam._moment_yyp = self.moment_yyp
-            electron_beam._moment_ypyp = self.moment_ypyp
-
-            x, xp, y, yp = electron_beam.get_sigmas_all()
-
-            self.electron_beam_size_h = x
-            self.electron_beam_size_v = y
-            self.electron_beam_divergence_h = xp
-            self.electron_beam_divergence_v = yp
+            electron_beam.set_moments_all(moment_xx   = self.moment_xx,
+                                          moment_xxp  = self.moment_xxp,
+                                          moment_xpxp = self.moment_xpxp,
+                                          moment_yy   = self.moment_yy,
+                                          moment_yyp  = self.moment_yyp,
+                                          moment_ypyp = self.moment_ypyp)
         elif self.type_of_properties == 1:
-            electron_beam.set_sigmas_all(sigma_x=self.electron_beam_size_h,
-                                         sigma_y=self.electron_beam_size_v,
-                                         sigma_xp=self.electron_beam_divergence_h,
-                                         sigma_yp=self.electron_beam_divergence_v)
-
-            self.moment_xx = electron_beam._moment_xx
-            self.moment_xpxp = electron_beam._moment_xpxp
-            self.moment_yy = electron_beam._moment_yy
-            self.moment_ypyp = electron_beam._moment_ypyp
-
+            electron_beam.set_sigmas_all(sigma_x = self.electron_beam_size_h,
+                                         sigma_y = self.electron_beam_size_v,
+                                         sigma_xp= self.electron_beam_divergence_h,
+                                         sigma_yp= self.electron_beam_divergence_v)
         elif self.type_of_properties == 2:
-            electron_beam.set_moments_from_twiss(horizontal_emittance = self.horizontal_emittance,
-                                                 horizontal_beta      = self.horizontal_beta,
-                                                 horizontal_alpha     = self.horizontal_alpha,
-                                                 horizontal_eta       = self.horizontal_eta,
-                                                 horizontal_etap      = self.horizontal_etap,
-                                                 vertical_emittance   = self.vertical_emittance,
-                                                 vertical_beta        = self.vertical_beta,
-                                                 vertical_alpha       = self.vertical_alpha,
-                                                 vertical_eta         = self.vertical_eta,
-                                                 vertical_etap        = self.vertical_etap)
+            electron_beam.set_twiss_all(emittance_x = self.horizontal_emittance,
+                                        alpha_x     = self.horizontal_alpha,
+                                        beta_x      = self.horizontal_beta,
+                                        eta_x       = self.horizontal_eta,
+                                        etap_x      = self.horizontal_etap,
+                                        emittance_y = self.vertical_emittance,
+                                        alpha_y     = self.vertical_alpha,
+                                        beta_y      = self.vertical_beta,
+                                        eta_y       = self.vertical_eta,
+                                        etap_y      = self.vertical_etap)
 
-            self.moment_xx = electron_beam._moment_xx
-            self.moment_xpxp = electron_beam._moment_xpxp
-            self.moment_yy = electron_beam._moment_yy
-            self.moment_ypyp = electron_beam._moment_ypyp
+        proceed = True
+        if self.type_of_properties in [0, 1] and self.check_twiss_change(electron_beam):
+            if not ConfirmDialog.confirmed(parent=self, message="This operation will set \u03B7, \u03B7' to zero and recompute the twiss parameters, proceed?"):
+                proceed = False
+                self.type_of_properties = 2
+                self.set_TypeOfProperties()
+
+        if proceed:
+            # modify input form with the results of the calculations
+            self.moment_xx       = round(electron_beam._moment_xx,   16)
+            self.moment_xxp      = round(electron_beam._moment_xxp,  16)
+            self.moment_xpxp     = round(electron_beam._moment_xpxp, 16)
+            self.moment_yy       = round(electron_beam._moment_yy,   16)
+            self.moment_yyp      = round(electron_beam._moment_yyp,  16)
+            self.moment_ypyp     = round(electron_beam._moment_ypyp, 16)
+            self.horizontal_eta  = electron_beam._dispersion_x
+            self.horizontal_etap = electron_beam._dispersionp_x
+            self.vertical_eta    = electron_beam._dispersion_y
+            self.vertical_etap   = electron_beam._dispersionp_y
 
             x, xp, y, yp = electron_beam.get_sigmas_all()
 
-            self.electron_beam_size_h = round(x, 9)
-            self.electron_beam_size_v = round(y, 9)
+            self.electron_beam_size_h       = round(x, 10)
+            self.electron_beam_size_v       = round(y, 10)
             self.electron_beam_divergence_h = round(xp, 10)
             self.electron_beam_divergence_v = round(yp, 10)
 
-        if self.type_of_initialization == 0: # zero
-            self.moment_x = 0.0
-            self.moment_y = 0.0
-            self.moment_z = self.get_default_initial_z()
-            self.moment_xp = 0.0
-            self.moment_yp = 0.0
-        elif self.type_of_initialization == 2: # sampled
-            self.moment_x = numpy.random.normal(0.0, self.electron_beam_size_h)
-            self.moment_y = numpy.random.normal(0.0, self.electron_beam_size_v)
-            self.moment_z = self.get_default_initial_z()
-            self.moment_xp = numpy.random.normal(0.0, self.electron_beam_divergence_h)
-            self.moment_yp = numpy.random.normal(0.0, self.electron_beam_divergence_v)
+            ex, ax, bx, ey, ay, by = electron_beam.get_twiss_all()
 
-        electron_beam._moment_x = self.moment_x
-        electron_beam._moment_y = self.moment_y
-        electron_beam._moment_z = self.moment_z
-        electron_beam._moment_xp = self.moment_xp
-        electron_beam._moment_yp = self.moment_yp
+            self.horizontal_emittance = round(ex, 16)
+            self.vertical_emittance   = round(ey, 16)
+            self.horizontal_alpha     = round(ax, 6)
+            self.vertical_alpha       = round(ay, 6)
+            self.horizontal_beta      = round(bx, 6)
+            self.vertical_beta        = round(by, 6)
 
-        print("\n", "Electron Trajectory Initialization:")
-        print("X0: ", electron_beam._moment_x)
-        print("Y0: ", electron_beam._moment_y)
-        print("Z0: ", electron_beam._moment_z)
-        print("XP0: ", electron_beam._moment_xp)
-        print("YP0: ", electron_beam._moment_yp)
-        print("E0: ", electron_beam._energy_in_GeV, "\n")
+            # Trajectory intialization
 
-        return electron_beam
+            if self.type_of_initialization == 0: # zero
+                self.moment_x  = 0.0
+                self.moment_y  = 0.0
+                self.moment_z  = self.get_default_initial_z()
+                self.moment_xp = 0.0
+                self.moment_yp = 0.0
+            elif self.type_of_initialization == 2: # sampled
+                self.moment_x  = numpy.random.normal(0.0, self.electron_beam_size_h)
+                self.moment_y  = numpy.random.normal(0.0, self.electron_beam_size_v)
+                self.moment_z  = self.get_default_initial_z()
+                self.moment_xp = numpy.random.normal(0.0, self.electron_beam_divergence_h)
+                self.moment_yp = numpy.random.normal(0.0, self.electron_beam_divergence_v)
+
+            electron_beam._moment_x  = self.moment_x
+            electron_beam._moment_y  = self.moment_y
+            electron_beam._moment_z  = self.moment_z
+            electron_beam._moment_xp = self.moment_xp
+            electron_beam._moment_yp = self.moment_yp
+
+            print("\n", "Electron Trajectory Initialization:")
+            print("X0: ", electron_beam._moment_x)
+            print("Y0: ", electron_beam._moment_y)
+            print("Z0: ", electron_beam._moment_z)
+            print("XP0: ", electron_beam._moment_xp)
+            print("YP0: ", electron_beam._moment_yp)
+            print("E0: ", electron_beam._energy_in_GeV, "\n")
+
+            return electron_beam
+        else:
+            return None
 
     def set_z0Default(self):
         self.moment_z = self.get_default_initial_z()
@@ -465,15 +481,26 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
             congruence.checkPositiveNumber(self.horizontal_emittance       , "Horizontal Emittance")
             congruence.checkPositiveNumber(self.vertical_emittance         , "Vertical Emittance")
 
+            def check_contraints(emittance, alpha, beta, eta, etap, direction):
+                ElectronBeam._set_twiss(energy_spread=self.electron_energy_spread,
+                                        emittance=emittance,
+                                        alpha=alpha,
+                                        beta=beta,
+                                        eta=eta,
+                                        etap=etap,
+                                        check_consistency=True,
+                                        direction=direction)
+            check_contraints(self.horizontal_emittance, self.horizontal_alpha, self.horizontal_beta, self.horizontal_eta, self.horizontal_etap, "Horizontal")
+            check_contraints(self.vertical_emittance, self.vertical_alpha, self.vertical_beta, self.vertical_eta, self.vertical_etap, "Vertical")
+
         self.checkLightSourceSpecificFields()
 
         if self.type_of_initialization == 2:
-            congruence.checkNumber(self.moment_x   , "x0")
-            congruence.checkNumber(self.moment_xp , "xp0")
-            congruence.checkNumber(self.moment_y   , "y0")
-            congruence.checkNumber(self.moment_yp , "yp0")
-            congruence.checkNumber(self.moment_z , "z0")
-
+            congruence.checkNumber(self.moment_x, "x0")
+            congruence.checkNumber(self.moment_xp, "xp0")
+            congruence.checkNumber(self.moment_y, "y0")
+            congruence.checkNumber(self.moment_yp, "yp0")
+            congruence.checkNumber(self.moment_z, "z0")
 
         # WAVEFRONT
 
@@ -633,27 +660,38 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                     light_source = data._light_source
 
                     self.source_name = light_source._name
-                    self.electron_energy_in_GeV = light_source._electron_beam._energy_in_GeV
-                    self.electron_energy_spread = light_source._electron_beam._energy_spread
-                    self.ring_current = light_source._electron_beam._current
+                    electron_beam    = light_source._electron_beam
+                    
+                    self.electron_energy_in_GeV = electron_beam._energy_in_GeV
+                    self.electron_energy_spread = electron_beam._energy_spread
+                    self.ring_current           = electron_beam._current
 
-                    self.moment_xx = light_source._electron_beam._moment_xx
-                    self.moment_xxp = light_source._electron_beam._moment_xxp
-                    self.moment_xpxp = light_source._electron_beam._moment_xpxp
-                    self.moment_yy = light_source._electron_beam._moment_yy
-                    self.moment_yyp = light_source._electron_beam._moment_yyp
-                    self.moment_ypyp = light_source._electron_beam._moment_ypyp
+                    self.moment_xx       = round(electron_beam._moment_xx,   16)
+                    self.moment_xxp      = round(electron_beam._moment_xxp,  16)
+                    self.moment_xpxp     = round(electron_beam._moment_xpxp, 16)
+                    self.moment_yy       = round(electron_beam._moment_yy,   16)
+                    self.moment_yyp      = round(electron_beam._moment_yyp,  16)
+                    self.moment_ypyp     = round(electron_beam._moment_ypyp, 16)
+                    self.horizontal_eta  = electron_beam._dispersion_x
+                    self.horizontal_etap = electron_beam._dispersionp_x
+                    self.vertical_eta    = electron_beam._dispersion_y
+                    self.vertical_etap   = electron_beam._dispersionp_y
 
-                    x, xp, y, yp = light_source._electron_beam.get_sigmas_all()
+                    x, xp, y, yp = electron_beam.get_sigmas_all()
 
-                    self.electron_beam_size_h = round(x, 9)
-                    self.electron_beam_size_v = round(y, 9)
+                    self.electron_beam_size_h       = round(x, 10)
+                    self.electron_beam_size_v       = round(y, 10)
                     self.electron_beam_divergence_h = round(xp, 10)
                     self.electron_beam_divergence_v = round(yp, 10)
 
-                    self.type_of_properties = 0
+                    ex, ax, bx, ey, ay, by = electron_beam.get_twiss_all()
 
-                    self.set_TypeOfProperties()
+                    self.horizontal_emittance = round(ex, 16)
+                    self.vertical_emittance   = round(ey, 16)
+                    self.horizontal_alpha     = round(ax, 6)
+                    self.vertical_alpha       = round(ay, 6)
+                    self.horizontal_beta      = round(bx, 6)
+                    self.vertical_beta        = round(by, 6)
 
                     self.receive_specific_syned_data(data)
                 else:
