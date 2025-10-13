@@ -342,11 +342,11 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         if trigger and trigger.new_object == True:
             self.runSRWSource()
 
-    def check_twiss_change(self, electron_beam: ElectronBeam):
-        return self.horizontal_eta != electron_beam._dispersion_x or \
-               self.vertical_eta != electron_beam._dispersion_y or \
-               self.horizontal_etap != electron_beam._dispersionp_x or \
-               self.vertical_etap != electron_beam._dispersionp_y
+    def check_dispersion_presence(self):
+        return self.horizontal_eta != 0.0 or \
+               self.vertical_eta != 0.0 or \
+               self.horizontal_etap != 0.0 or \
+               self.vertical_etap != 0.0
 
     def get_electron_beam(self):
         if self.type_of_initialization == 2:
@@ -368,60 +368,31 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                                           moment_yyp  = self.moment_yyp,
                                           moment_ypyp = self.moment_ypyp)
         elif self.type_of_properties == 1:
-            electron_beam.set_sigmas_all(sigma_x = self.electron_beam_size_h,
-                                         sigma_y = self.electron_beam_size_v,
-                                         sigma_xp= self.electron_beam_divergence_h,
-                                         sigma_yp= self.electron_beam_divergence_v)
+            electron_beam.set_sigmas_all(sigma_x  = self.electron_beam_size_h,
+                                         sigma_y  = self.electron_beam_size_v,
+                                         sigma_xp = self.electron_beam_divergence_h,
+                                         sigma_yp = self.electron_beam_divergence_v)
         elif self.type_of_properties == 2:
             electron_beam.set_twiss_all(emittance_x = self.horizontal_emittance,
                                         alpha_x     = self.horizontal_alpha,
                                         beta_x      = self.horizontal_beta,
-                                        eta_x       = self.horizontal_eta,
-                                        etap_x      = self.horizontal_etap,
                                         emittance_y = self.vertical_emittance,
                                         alpha_y     = self.vertical_alpha,
-                                        beta_y      = self.vertical_beta,
-                                        eta_y       = self.vertical_eta,
-                                        etap_y      = self.vertical_etap)
+                                        beta_y      = self.vertical_beta)
+            electron_beam.set_dispersion_all(eta_x  = self.horizontal_eta,
+                                             etap_x = self.horizontal_etap,
+                                             eta_y  = self.vertical_eta,
+                                             etap_y = self.vertical_etap)
 
         proceed = True
-        if self.type_of_properties in [0, 1] and self.check_twiss_change(electron_beam):
-            if not ConfirmDialog.confirmed(parent=self, message="This operation will set \u03B7, \u03B7' to zero and recompute the twiss parameters, proceed?"):
+        if self.type_of_properties in [0, 1] and self.check_dispersion_presence():
+            if not ConfirmDialog.confirmed(parent=self, message="Dispersion parameters \u03B7, \u03B7' will be reset to zero, proceed?"):
                 proceed = False
                 self.type_of_properties = 2
                 self.set_TypeOfProperties()
 
         if proceed:
-            # modify input form with the results of the calculations
-            self.moment_xx       = round(electron_beam._moment_xx,   16)
-            self.moment_xxp      = round(electron_beam._moment_xxp,  16)
-            self.moment_xpxp     = round(electron_beam._moment_xpxp, 16)
-            self.moment_yy       = round(electron_beam._moment_yy,   16)
-            self.moment_yyp      = round(electron_beam._moment_yyp,  16)
-            self.moment_ypyp     = round(electron_beam._moment_ypyp, 16)
-            self.horizontal_eta  = electron_beam._dispersion_x
-            self.horizontal_etap = electron_beam._dispersionp_x
-            self.vertical_eta    = electron_beam._dispersion_y
-            self.vertical_etap   = electron_beam._dispersionp_y
-
-            x, xp, y, yp = electron_beam.get_sigmas_all()
-
-            self.electron_beam_size_h       = round(x, 10)
-            self.electron_beam_size_v       = round(y, 10)
-            self.electron_beam_divergence_h = round(xp, 10)
-            self.electron_beam_divergence_v = round(yp, 10)
-
-            ex, ax, bx, ey, ay, by = electron_beam.get_twiss_all()
-
-            self.horizontal_emittance = round(ex, 16)
-            self.vertical_emittance   = round(ey, 16)
-            self.horizontal_alpha     = round(ax, 6)
-            self.vertical_alpha       = round(ay, 6)
-            self.horizontal_beta      = round(bx, 6)
-            self.vertical_beta        = round(by, 6)
-
             # Trajectory intialization
-
             if self.type_of_initialization == 0: # zero
                 self.moment_x  = 0.0
                 self.moment_y  = 0.0
@@ -435,19 +406,21 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                 self.moment_xp = numpy.random.normal(0.0, self.electron_beam_divergence_h)
                 self.moment_yp = numpy.random.normal(0.0, self.electron_beam_divergence_v)
 
-            electron_beam._moment_x  = self.moment_x
-            electron_beam._moment_y  = self.moment_y
-            electron_beam._moment_z  = self.moment_z
-            electron_beam._moment_xp = self.moment_xp
-            electron_beam._moment_yp = self.moment_yp
+            electron_beam.set_first_moments_all(self.moment_x,
+                                                self.moment_xp,
+                                                self.moment_y,
+                                                self.moment_yp,
+                                                self.moment_z)
+
+            self.populate_fields_from_electron_beam(electron_beam)
 
             print("\n", "Electron Trajectory Initialization:")
-            print("X0: ", electron_beam._moment_x)
-            print("Y0: ", electron_beam._moment_y)
-            print("Z0: ", electron_beam._moment_z)
-            print("XP0: ", electron_beam._moment_xp)
-            print("YP0: ", electron_beam._moment_yp)
-            print("E0: ", electron_beam._energy_in_GeV, "\n")
+            print("X0: ",  self.moment_x)
+            print("Y0: ",  self.moment_y)
+            print("Z0: ",  self.moment_z)
+            print("XP0: ", self.moment_xp)
+            print("YP0: ", self.moment_yp)
+            print("E0: ",  self.electron_energy_in_GeV, "\n")
 
             return electron_beam
         else:
@@ -480,18 +453,6 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         elif self.type_of_properties == 2:
             congruence.checkPositiveNumber(self.horizontal_emittance       , "Horizontal Emittance")
             congruence.checkPositiveNumber(self.vertical_emittance         , "Vertical Emittance")
-
-            def check_contraints(emittance, alpha, beta, eta, etap, direction):
-                ElectronBeam._set_twiss(energy_spread=self.electron_energy_spread,
-                                        emittance=emittance,
-                                        alpha=alpha,
-                                        beta=beta,
-                                        eta=eta,
-                                        etap=etap,
-                                        check_consistency=True,
-                                        direction=direction)
-            check_contraints(self.horizontal_emittance, self.horizontal_alpha, self.horizontal_beta, self.horizontal_eta, self.horizontal_etap, "Horizontal")
-            check_contraints(self.vertical_emittance, self.vertical_alpha, self.vertical_beta, self.vertical_eta, self.vertical_etap, "Vertical")
 
         self.checkLightSourceSpecificFields()
 
@@ -583,7 +544,6 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
 
                 SRWWavefrontViewer.add_2D_wavefront_plot(e, h, v, i, tickets)
 
-
     def get_automatic_sr_method(self):
         return self.wf_sr_method
 
@@ -662,38 +622,11 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                     self.source_name = light_source._name
                     electron_beam    = light_source._electron_beam
                     
-                    self.electron_energy_in_GeV = electron_beam._energy_in_GeV
-                    self.electron_energy_spread = electron_beam._energy_spread
-                    self.ring_current           = electron_beam._current
-
-                    self.moment_xx       = round(electron_beam._moment_xx,   16)
-                    self.moment_xxp      = round(electron_beam._moment_xxp,  16)
-                    self.moment_xpxp     = round(electron_beam._moment_xpxp, 16)
-                    self.moment_yy       = round(electron_beam._moment_yy,   16)
-                    self.moment_yyp      = round(electron_beam._moment_yyp,  16)
-                    self.moment_ypyp     = round(electron_beam._moment_ypyp, 16)
-                    self.horizontal_eta  = electron_beam._dispersion_x
-                    self.horizontal_etap = electron_beam._dispersionp_x
-                    self.vertical_eta    = electron_beam._dispersion_y
-                    self.vertical_etap   = electron_beam._dispersionp_y
-
-                    x, xp, y, yp = electron_beam.get_sigmas_all()
-
-                    self.electron_beam_size_h       = round(x, 10)
-                    self.electron_beam_size_v       = round(y, 10)
-                    self.electron_beam_divergence_h = round(xp, 10)
-                    self.electron_beam_divergence_v = round(yp, 10)
-
-                    ex, ax, bx, ey, ay, by = electron_beam.get_twiss_all()
-
-                    self.horizontal_emittance = round(ex, 16)
-                    self.vertical_emittance   = round(ey, 16)
-                    self.horizontal_alpha     = round(ax, 6)
-                    self.vertical_alpha       = round(ay, 6)
-                    self.horizontal_beta      = round(bx, 6)
-                    self.vertical_beta        = round(by, 6)
-
+                    self.populate_fields_from_electron_beam(electron_beam)
                     self.receive_specific_syned_data(data)
+
+                    self.type_of_properties = 2 if self.check_dispersion_presence() else 1
+                    self.set_TypeOfProperties()
                 else:
                     raise ValueError("Syned data not correct")
             except Exception as exception:
@@ -704,3 +637,57 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
 
     def callback_electron_energy(self):
         pass
+
+    def populate_fields_from_electron_beam(self, electron_beam):
+        self.electron_energy_in_GeV = electron_beam.energy()
+        self.electron_energy_spread = electron_beam._energy_spread
+        self.ring_current           = electron_beam.current()
+
+        moment_xx,\
+        moment_xxp,\
+        moment_xpxp,\
+        moment_yy,\
+        moment_yyp,\
+        moment_ypyp = electron_beam.get_moments_all()
+
+        self.moment_xx              = round(moment_xx,   16)
+        self.moment_xxp             = round(moment_xxp,  16)
+        self.moment_xpxp            = round(moment_xpxp, 16)
+        self.moment_yy              = round(moment_yy,   16)
+        self.moment_yyp             = round(moment_yyp,  16)
+        self.moment_ypyp            = round(moment_ypyp, 16)
+
+        if isinstance(electron_beam, SRWElectronBeam):
+            moment_x,\
+            moment_xp,\
+            moment_y,\
+            moment_yp,\
+            moment_z = electron_beam.get_first_moments_all()
+
+            self.moment_x  = round(moment_x, 10)
+            self.moment_y  = round(moment_y, 10)
+            self.moment_z  = round(moment_z, 10)
+            self.moment_xp = round(moment_xp, 10)
+            self.moment_yp = round(moment_yp, 10)
+
+        x, xp, y, yp                 = electron_beam.get_sigmas_all()
+        ex, ax, bx, ey, ay, by,      = electron_beam.get_twiss_all()
+        eta_x, etap_x, eta_y, etap_y = electron_beam.get_dispersion_all()
+
+        self.electron_beam_size_h       = round(x, 10)
+        self.electron_beam_size_v       = round(y, 10)
+        self.electron_beam_divergence_h = round(xp, 10)
+        self.electron_beam_divergence_v = round(yp, 10)
+        self.horizontal_emittance       = round(ex, 16)
+        self.vertical_emittance         = round(ey, 16)
+        self.horizontal_alpha           = round(ax, 6)
+        self.vertical_alpha             = round(ay, 6)
+        self.horizontal_beta            = round(bx, 6)
+        self.vertical_beta              = round(by, 6)
+        self.horizontal_eta             = round(eta_x, 8)
+        self.vertical_eta               = round(eta_y, 8)
+        self.horizontal_etap            = round(etap_x, 8)
+        self.vertical_etap              = round(etap_y, 8)
+
+
+
