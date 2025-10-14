@@ -152,51 +152,55 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         tab_beam = oasysgui.createTabPage(tab_electron, "Beam")
         tab_traj = oasysgui.createTabPage(tab_electron, "Trajectory")
 
-        gui.separator(tab_beam)
-
         gui.comboBox(tab_beam, self, "type_of_properties", label="Electron Beam Properties", labelWidth=350,
                      items=["From 2nd Moments", "From Size/Divergence", "From Twiss"],
                      callback=self.set_TypeOfProperties,
                      sendSelectedValue=False, orientation="horizontal")
 
-        self.left_box_2_1 = oasysgui.widgetBox(tab_beam, "", addSpace=False, orientation="vertical", height=185)
+        self.left_box_2_1 = oasysgui.widgetBox(tab_beam, "", addSpace=False, orientation="vertical", height=190)
 
-        gui.separator(self.left_box_2_1)
+        gui.separator(self.left_box_2_1, height=2)
 
-        oasysgui.lineEdit(self.left_box_2_1, self, "moment_xx", "\u03c3x\u22c5\u03c3x   [m\u00b2]", labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_1, self, "moment_xxp", "\u03c3x\u22c5\u03c3x'  [m\u22c5rad]", labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_1, self, "moment_xpxp", "\u03c3x'\u22c5\u03c3x' [rad\u00b2]", labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_1, self, "moment_yy", "\u03c3y\u22c5\u03c3y   [m\u00b2]", labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_1, self, "moment_yyp", "\u03c3y\u22c5\u03c3y'  [m\u22c5rad]", labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_1, self, "moment_ypyp", "\u03c3y'\u22c5\u03c3y' [rad\u00b2]", labelWidth=200, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(self.left_box_2_1, self, "moment_xx", "\u03c3x\u22c5\u03c3x   [m\u00b2]",     labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_1, self, "moment_xxp", "\u03c3x\u22c5\u03c3x'  [m\u22c5rad]", labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_1, self, "moment_xpxp", "\u03c3x'\u22c5\u03c3x' [rad\u00b2]", labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_1, self, "moment_yy", "\u03c3y\u22c5\u03c3y   [m\u00b2]",     labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_1, self, "moment_yyp", "\u03c3y\u22c5\u03c3y'  [m\u22c5rad]", labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_1, self, "moment_ypyp", "\u03c3y'\u22c5\u03c3y' [rad\u00b2]", labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        lbl = oasysgui.widgetLabel(self.left_box_2_1, "Note: 2nd Moments do not include dispersion")
+        lbl.setStyleSheet("color: darkblue; font-weight: bold;")
 
-        self.left_box_2_2 = oasysgui.widgetBox(tab_beam, "", addSpace=False, orientation="vertical", height=185)
+        self.left_box_2_2 = oasysgui.widgetBox(tab_beam, "", addSpace=False, orientation="vertical", height=190)
 
-        gui.separator(self.left_box_2_2)
+        gui.separator(self.left_box_2_2, height=2)
 
-        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_size_h",       "\u03c3x [m]", labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_size_v",       "\u03c3y [m]",  labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_divergence_h", "\u03c3x' [rad]", labelWidth=200, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_divergence_v", "\u03c3y' [rad]", labelWidth=200, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_size_h",       "\u03c3x [m]",    labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_size_v",       "\u03c3y [m]",    labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_divergence_h", "\u03c3x' [rad]", labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(self.left_box_2_2, self, "electron_beam_divergence_v", "\u03c3y' [rad]", labelWidth=200, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        lbl = oasysgui.widgetLabel(self.left_box_2_2, "Note: Size/Divergence do not include dispersion")
+        lbl.setStyleSheet("color: darkblue; font-weight: bold;")
 
-        self.left_box_2_3 = oasysgui.widgetBox(tab_beam, "", addSpace=False, orientation="horizontal", height=185)
+        self.left_box_2_3 = oasysgui.widgetBox(tab_beam, "", addSpace=False, orientation="horizontal", height=190)
 
-        left_box_2_3_l = oasysgui.widgetBox(self.left_box_2_3, "", addSpace=False, orientation="vertical", height=185)
-        left_box_2_3_r = oasysgui.widgetBox(self.left_box_2_3, "", addSpace=False, orientation="vertical", height=185)
+        left_box_2_3_l = oasysgui.widgetBox(self.left_box_2_3, "", addSpace=False, orientation="vertical", height=190)
+        left_box_2_3_r = oasysgui.widgetBox(self.left_box_2_3, "", addSpace=False, orientation="vertical", height=190)
 
-        gui.separator(left_box_2_3_l)
-        gui.separator(left_box_2_3_r)
+        gui.separator(left_box_2_3_l, height=2)
+        gui.separator(left_box_2_3_r, height=2)
 
-        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_emittance", "Emittance x [m]", labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_alpha"    , "\u03B1x [rad]"    , labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_beta"     , "\u03B2x [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_eta"      , "\u03B7x [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_etap"     , "\u03B7x' [rad]"   , labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_emittance"  , "Emittance y [m]", labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_alpha"      , "\u03B1y [rad]"    , labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_beta"       , "\u03B2y [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_eta"        , "\u03B7y [m]"    , labelWidth=100, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_etap"       , "\u03B7y' [rad]"   , labelWidth=100, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_emittance", "Emittance x [m]",   labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_alpha"    , "\u03B1x [rad]"    , labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_beta"     , "\u03B2x [m]"    ,   labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_eta"      , "\u03B7x [m]"    ,   labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_l, self, "horizontal_etap"     , "\u03B7x' [rad]"   , labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_emittance"  , "Emittance y [m]",   labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_alpha"      , "\u03B1y [rad]"    , labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_beta"       , "\u03B2y [m]"    ,   labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_eta"        , "\u03B7y [m]"    ,   labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+        oasysgui.lineEdit(left_box_2_3_r, self, "vertical_etap"       , "\u03B7y' [rad]"   , labelWidth=100, valueType=float, orientation="horizontal", callback=self._electron_beam_modified)
+
+        self.left_box_2_4 = oasysgui.widgetBox(tab_beam, "", addSpace=False, orientation="horizontal", height=190)
 
         self.set_TypeOfProperties()
 
@@ -273,6 +277,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         self.left_box_2_1.setVisible(self.type_of_properties==0)
         self.left_box_2_2.setVisible(self.type_of_properties==1)
         self.left_box_2_3.setVisible(self.type_of_properties==2)
+        self.left_box_2_4.setVisible(self.type_of_properties==3)
 
     def set_TypeOfInitialization(self):
         self.left_box_3_1.setVisible(self.type_of_initialization==1)
@@ -303,7 +308,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         self.progressBarInit()
 
         try:
-            self.checkFields()
+            self.check_data()
             electron_beam = self.get_electron_beam()
 
             if not electron_beam is None: # User decided to stop the calculation of the twiss from momenta or size/div
@@ -342,12 +347,6 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         if trigger and trigger.new_object == True:
             self.runSRWSource()
 
-    def check_dispersion_presence(self):
-        return self.horizontal_eta != 0.0 or \
-               self.vertical_eta != 0.0 or \
-               self.horizontal_etap != 0.0 or \
-               self.vertical_etap != 0.0
-
     def get_electron_beam(self):
         if self.type_of_initialization == 2:
             electron_beam = SRWElectronBeam(energy_in_GeV=numpy.random.normal(self.electron_energy_in_GeV,
@@ -384,14 +383,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                                              eta_y  = self.vertical_eta,
                                              etap_y = self.vertical_etap)
 
-        proceed = True
-        if self.type_of_properties in [0, 1] and self.check_dispersion_presence():
-            if not ConfirmDialog.confirmed(parent=self, message="Dispersion parameters \u03B7, \u03B7' will be reset to zero, proceed?"):
-                proceed = False
-                self.type_of_properties = 2
-                self.set_TypeOfProperties()
-
-        if proceed:
+        if self._check_dispersion_reset():
             # Trajectory intialization
             if self.type_of_initialization == 0: # zero
                 self.moment_x  = 0.0
@@ -435,37 +427,10 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
     def get_srw_source(self, electron_beam=ElectronBeam()):
         raise NotImplementedError()
 
-    def checkFields(self):
-        congruence.checkStrictlyPositiveNumber(self.electron_energy_in_GeV, "Energy")
-        congruence.checkPositiveNumber(self.electron_energy_spread, "Energy Spread")
-        congruence.checkStrictlyPositiveNumber(self.ring_current, "Ring Current")
-
-        if self.type_of_properties == 0:
-            congruence.checkPositiveNumber(self.moment_xx   , "Moment xx")
-            congruence.checkPositiveNumber(self.moment_xpxp , "Moment xpxp")
-            congruence.checkPositiveNumber(self.moment_yy   , "Moment yy")
-            congruence.checkPositiveNumber(self.moment_ypyp , "Moment ypyp")
-        elif self.type_of_properties == 1:
-            congruence.checkPositiveNumber(self.electron_beam_size_h       , "Horizontal Beam Size")
-            congruence.checkPositiveNumber(self.electron_beam_divergence_h , "Vertical Beam Size")
-            congruence.checkPositiveNumber(self.electron_beam_size_v       , "Horizontal Beam Divergence")
-            congruence.checkPositiveNumber(self.electron_beam_divergence_v , "Vertical Beam Divergence")
-        elif self.type_of_properties == 2:
-            congruence.checkPositiveNumber(self.horizontal_emittance       , "Horizontal Emittance")
-            congruence.checkPositiveNumber(self.vertical_emittance         , "Vertical Emittance")
-
-        self.checkLightSourceSpecificFields()
-
-        if self.type_of_initialization == 2:
-            congruence.checkNumber(self.moment_x, "x0")
-            congruence.checkNumber(self.moment_xp, "xp0")
-            congruence.checkNumber(self.moment_y, "y0")
-            congruence.checkNumber(self.moment_yp, "yp0")
-            congruence.checkNumber(self.moment_z, "z0")
-
-        # WAVEFRONT
-
-        self.checkWavefrontPhotonEnergy()
+    def check_data(self):
+        self.check_electron_beam()
+        self.check_light_source_specific_fields()
+        self.check_wavefront_fields()
 
         congruence.checkStrictlyPositiveNumber(self.wf_h_slit_gap, "Wavefront Propagation H Slit Gap")
         congruence.checkStrictlyPositiveNumber(self.wf_v_slit_gap, "Wavefront Propagation V Slit Gap")
@@ -478,10 +443,34 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         congruence.checkStrictlyPositiveNumber(self.wf_number_of_points_for_trajectory_calculation, "Wavefront Propagation Number of points for trajectory calculation")
         congruence.checkPositiveNumber(self.wf_sampling_factor_for_adjusting_nx_ny, "Wavefront Propagation Sampling Factor for adjusting nx/ny")
 
-    def checkLightSourceSpecificFields(self):
+    def check_electron_beam(self):
+        congruence.checkStrictlyPositiveNumber(self.electron_energy_in_GeV, "Energy")
+        congruence.checkPositiveNumber(self.electron_energy_spread, "Energy Spread")
+        congruence.checkStrictlyPositiveNumber(self.ring_current, "Ring Current")
+        if self.type_of_properties == 0:
+            congruence.checkPositiveNumber(self.moment_xx, "Moment xx")
+            congruence.checkPositiveNumber(self.moment_xpxp, "Moment xpxp")
+            congruence.checkPositiveNumber(self.moment_yy, "Moment yy")
+            congruence.checkPositiveNumber(self.moment_ypyp, "Moment ypyp")
+        elif self.type_of_properties == 1:
+            congruence.checkPositiveNumber(self.electron_beam_size_h, "Horizontal Beam Size")
+            congruence.checkPositiveNumber(self.electron_beam_divergence_h, "Vertical Beam Size")
+            congruence.checkPositiveNumber(self.electron_beam_size_v, "Horizontal Beam Divergence")
+            congruence.checkPositiveNumber(self.electron_beam_divergence_v, "Vertical Beam Divergence")
+        elif self.type_of_properties == 2:
+            congruence.checkPositiveNumber(self.horizontal_emittance, "Horizontal Emittance")
+            congruence.checkPositiveNumber(self.vertical_emittance, "Vertical Emittance")
+        if self.type_of_initialization == 2:
+            congruence.checkNumber(self.moment_x, "x0")
+            congruence.checkNumber(self.moment_xp, "xp0")
+            congruence.checkNumber(self.moment_y, "y0")
+            congruence.checkNumber(self.moment_yp, "yp0")
+            congruence.checkNumber(self.moment_z, "z0")
+
+    def check_light_source_specific_fields(self):
         raise NotImplementedError()
 
-    def checkWavefrontPhotonEnergy(self):
+    def check_wavefront_fields(self):
         congruence.checkStrictlyPositiveNumber(self.wf_photon_energy, "Wavefront Propagation Photon Energy")
 
         if self.wf_energy_type == 1:
@@ -625,7 +614,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                     self.populate_fields_from_electron_beam(electron_beam)
                     self.receive_specific_syned_data(data)
 
-                    self.type_of_properties = 2 if self.check_dispersion_presence() else 1
+                    self.type_of_properties = 2 if self._check_dispersion_presence() else 1
                     self.set_TypeOfProperties()
                 else:
                     raise ValueError("Syned data not correct")
@@ -689,5 +678,26 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         self.horizontal_etap            = round(etap_x, 8)
         self.vertical_etap              = round(etap_y, 8)
 
+    def _check_dispersion_presence(self):
+        return self.horizontal_eta != 0.0 or \
+               self.vertical_eta != 0.0 or \
+               self.horizontal_etap != 0.0 or \
+               self.vertical_etap != 0.0
 
+    def _check_dispersion_reset(self):
+        proceed = True
+        if self.type_of_properties in [0, 1, 3] and self._check_dispersion_presence():
+            if not ConfirmDialog.confirmed(parent=self, message="Dispersion parameters \u03B7, \u03B7' will be reset to zero, proceed?"):
+                proceed = False
+                self.type_of_properties = 2
+                self.set_TypeOfProperties()
+        return proceed
 
+    def _electron_beam_modified(self):
+        try:
+            self.check_electron_beam()
+            if self._check_dispersion_reset():
+                self.populate_fields_from_electron_beam(self.get_electron_beam())
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e.args[0]), QMessageBox.Ok)
+            if self.IS_DEVELOP: raise e

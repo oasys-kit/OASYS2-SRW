@@ -291,7 +291,7 @@ class OWSRWUndulator(OWSRWSource):
     def get_source_length(self):
         return self.period_length*self.number_of_periods
 
-    def checkLightSourceSpecificFields(self):
+    def check_light_source_specific_fields(self):
         if self.magnetic_field_from == 0:
             congruence.checkPositiveNumber(self.K_horizontal, "Horizontal K")
             congruence.checkPositiveNumber(self.K_vertical, "Vertical K")
@@ -302,7 +302,7 @@ class OWSRWUndulator(OWSRWSource):
         congruence.checkStrictlyPositiveNumber(self.period_length, "Period Length")
         congruence.checkStrictlyPositiveNumber(self.number_of_periods, "Number of Periods")
 
-    def checkWavefrontPhotonEnergy(self):
+    def check_wavefront_fields(self):
         if self.wf_energy_type == 0:
             congruence.checkStrictlyPositiveNumber(self.wf_harmonic_number, "Wavefront Propagation Harmonic Number")
         elif self.wf_energy_type == 1:

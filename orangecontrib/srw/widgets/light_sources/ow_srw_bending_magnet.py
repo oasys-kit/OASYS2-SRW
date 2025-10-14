@@ -61,7 +61,7 @@ class OWSRWBendingMagnet(OWSRWSource):
     def get_source_length(self):
         return self.length
 
-    def checkLightSourceSpecificFields(self):
+    def check_light_source_specific_fields(self):
         congruence.checkStrictlyPositiveNumber(self.magnetic_radius, "Magnetic Radius")
         congruence.checkStrictlyPositiveNumber(self.magnetic_field, "Magnetic Field")
         congruence.checkStrictlyPositiveNumber(self.length, "Length")
