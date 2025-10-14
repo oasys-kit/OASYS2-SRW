@@ -4,7 +4,6 @@ from orangewidget.widget import Input, Output
 from oasys2.widget.widget import OWWidget
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QRect
 
@@ -46,14 +45,7 @@ class OWToWofryWavefront2d(OWWidget):
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 
         label = gui.label(self.controlArea, self, "From SRW Wavefront To Wofry Wavefront")
-        font = QFont(label.font())
-        font.setBold(True)
-        font.setItalic(True)
-        font.setPixelSize(14)
-        label.setFont(font)
-        palette = QPalette(label.palette()) # make a copy of the palette
-        palette.setColor(QPalette.Foreground, QColor('Dark Blue'))
-        label.setPalette(palette) # assign new palette
+        label.setStyleSheet("color: darkblue; font-weight: bold; font-style: italic; font-size: 14px")
 
         gui.separator(self.controlArea, 10)
 

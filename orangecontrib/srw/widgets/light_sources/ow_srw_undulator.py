@@ -1,7 +1,7 @@
 import os, numpy
 
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox
-from PyQt5.QtGui import QPixmap, QPalette, QColor, QFont
+from PyQt5.QtGui import QPixmap
 import orangecanvas.resources as resources
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -140,13 +140,7 @@ class OWSRWUndulator(OWSRWSource):
         oasysgui.lineEdit(self.use_harmonic_box_1, self, "wf_harmonic_number", "Harmonic #", labelWidth=260, valueType=int, orientation="horizontal", callback=self.set_harmonic_energy)
         le_he = oasysgui.lineEdit(self.use_harmonic_box_1, self, "wf_harmonic_energy", "Harmonic Energy", labelWidth=260, valueType=float, orientation="horizontal")
         le_he.setReadOnly(True)
-        font = QFont(le_he.font())
-        font.setBold(True)
-        le_he.setFont(font)
-        palette = QPalette(le_he.palette())
-        palette.setColor(QPalette.Text, QColor('dark blue'))
-        palette.setColor(QPalette.Base, QColor(243, 240, 160))
-        le_he.setPalette(palette)
+        le_he.setStyleSheet("color: darkblue; background-color: rgb(243, 240, 160); font-weight: bold;")
 
         self.use_harmonic_box_2 = oasysgui.widgetBox(box, "", addSpace=False, orientation="vertical", height=50)
         oasysgui.lineEdit(self.use_harmonic_box_2, self, "wf_photon_energy", "Photon Energy [eV]", labelWidth=260, valueType=float, orientation="horizontal")

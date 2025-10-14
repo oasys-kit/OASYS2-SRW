@@ -11,7 +11,7 @@ except:
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QPalette, QColor, QFont
+from PyQt5.QtGui import QPalette, QColor
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -149,9 +149,7 @@ class SRWWavefrontViewer(SRWWidget):
         self.le_srw_live_propagation_mode = gui.lineEdit(propagation_box, self, "srw_live_propagation_mode", "Propagation Mode", labelWidth=150, valueType=str, orientation="horizontal")
         self.le_srw_live_propagation_mode.setAlignment(Qt.AlignCenter)
         self.le_srw_live_propagation_mode.setReadOnly(True)
-        font = QFont(self.le_srw_live_propagation_mode.font())
-        font.setBold(True)
-        self.le_srw_live_propagation_mode.setFont(font)
+        self.le_srw_live_propagation_mode.setStyleSheet("font-weight: bold;")
 
         self.set_srw_live_propagation_mode()
 

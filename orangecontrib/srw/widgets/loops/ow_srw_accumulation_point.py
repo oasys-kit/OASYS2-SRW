@@ -3,7 +3,6 @@ import numpy
 from numpy import nan
 from scipy.interpolate import RectBivariateSpline
 
-from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
 from orangewidget import gui
@@ -89,13 +88,7 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
         button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
 
         button = gui.button(button_box, self, "Reset Accumulated Wavefronts", callback=self.reset_accumulation)
-        font = QFont(button.font())
-        font.setBold(True)
-        button.setFont(font)
-        palette = QPalette(button.palette()) # make a copy of the palette
-        palette.setColor(QPalette.ButtonText, QColor('Dark Blue'))
-        button.setPalette(palette) # assign new palette
-        button.setFixedHeight(45)
+        button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
 
         gui.separator(self.controlArea)
 
@@ -180,12 +173,7 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
         oasysgui.lineEdit(self.tab_bas, self, "last_number_of_wavefronts", "Previous Nr. of Wavefronts", labelWidth=260, valueType=int, orientation="horizontal")
         oasysgui.lineEdit(self.tab_bas, self, "current_number_of_wavefronts", "Current Nr. of Wavefronts", labelWidth=260, valueType=int, orientation="horizontal")
         le = oasysgui.lineEdit(self.tab_bas, self, "total_number_of_wavefronts", "Total Nr. of Wavefronts", labelWidth=260, valueType=int, orientation="horizontal")
-        font = QFont(le.font())
-        font.setBold(True)
-        le.setFont(font)
-        palette = QPalette(le.palette()) # make a copy of the palette
-        palette.setColor(QPalette.ButtonText, QColor('Dark Blue'))
-        le.setPalette(palette) # assign new palette
+        le.setStyleSheet("color: darkblue; font-weight: bold;")
 
     def set_MergingRange(self):
         self.merge_range_box_1.setVisible(self.use_merging_range == 1)
