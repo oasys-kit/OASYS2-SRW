@@ -1,7 +1,7 @@
 import numpy
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
-from PyQt5.QtCore import Qt
+from AnyQt.QtWidgets import QWidget, QVBoxLayout
+from AnyQt.QtCore import Qt
 
 from matplotlib import cm, rcParams
 from matplotlib.figure import Figure

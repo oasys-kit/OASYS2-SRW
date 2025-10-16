@@ -6,8 +6,8 @@ from oasys2.widget import gui as oasysgui
 from oasys2.widget.widget import OWWidget
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtCore import QRect
+from AnyQt.QtWidgets import QApplication, QMessageBox
+from AnyQt.QtCore import QRect
 
 from orangecontrib.srw.util.srw_objects import SRWData
 
@@ -45,7 +45,7 @@ class OWFromWofryWavefront2d(OWWidget):
     def __init__(self):
         super().__init__()
 
-        geom = QApplication.desktop().availableGeometry()
+        geom = QApplication.primaryScreen().geometry()
         self.setGeometry(QRect(round(geom.width()*0.05),
                                round(geom.height()*0.05),
                                round(min(geom.width()*0.98, self.CONTROL_AREA_WIDTH+10)),

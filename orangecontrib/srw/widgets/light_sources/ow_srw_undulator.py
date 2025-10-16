@@ -1,7 +1,7 @@
 import os, numpy
 
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox
-from PyQt5.QtGui import QPixmap
+from AnyQt.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox
+from AnyQt.QtGui import QPixmap
 import orangecanvas.resources as resources
 from orangewidget import gui
 from orangewidget.settings import Setting

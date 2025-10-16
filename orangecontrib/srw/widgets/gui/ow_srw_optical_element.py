@@ -1,9 +1,9 @@
 import os, numpy
 from numpy import nan
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMessageBox, QDialogButtonBox, QDialog, QLabel, QSizePolicy
+from AnyQt.QtCore import Qt
+from AnyQt.QtGui import QPixmap
+from AnyQt.QtWidgets import QMessageBox, QDialogButtonBox, QDialog, QLabel, QSizePolicy
 
 import orangecanvas.resources as resources
 

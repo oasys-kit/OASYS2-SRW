@@ -1,7 +1,6 @@
 import os, sys
 
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog
+from AnyQt.QtWidgets import QFileDialog, QMessageBox
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -129,9 +128,9 @@ class SRWPythonScriptME(SRWWidget):
                 file.write(str(self.pythonScript.toPlainText()))
                 file.close()
 
-                QtWidgets.QMessageBox.information(self, "QMessageBox.information()",
+                QMessageBox.information(self, "QMessageBox.information()",
                                               "File " + file_name + " written to disk",
-                                              QtWidgets.QMessageBox.Ok)
+                                              QMessageBox.Ok)
 
     @Inputs.srw_data
     def set_input(self, srw_data):

@@ -3,24 +3,24 @@ import code
 import keyword
 import itertools
 
-from PyQt5 import QtGui, QtWidgets
-
-from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtGui import (
-    QTextCursor, QFont, QColor, QPalette
+from AnyQt.QtCore import (
+    QItemSelectionModel, Qt, QRegularExpression
+)
+from AnyQt.QtGui import (
+    QTextCursor, QTextCharFormat, QBrush, QPalette, QColor, QFont, QSyntaxHighlighter
+)
+from AnyQt.QtWidgets import (
+    QPlainTextEdit, QStyledItemDelegate, QStyleOptionViewItem, QLineEdit
 )
 
-from PyQt5.QtCore import Qt, QRegExp
-
-
 def text_format(foreground=Qt.black, weight=QFont.Normal):
-    fmt = QtGui.QTextCharFormat()
-    fmt.setForeground(QtGui.QBrush(foreground))
+    fmt = QTextCharFormat()
+    fmt.setForeground(QBrush(foreground))
     fmt.setFontWeight(weight)
     return fmt
 
 
-class PythonSyntaxHighlighter(QtGui.QSyntaxHighlighter):
+class PythonSyntaxHighlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
 
         self.keywordFormat = text_format(Qt.blue, QFont.Bold)
@@ -31,26 +31,26 @@ class PythonSyntaxHighlighter(QtGui.QSyntaxHighlighter):
 
         self.keywords = list(keyword.kwlist)
 
-        self.rules = [(QRegExp(r"\b%s\b" % kwd), self.keywordFormat)
+        self.rules = [(QRegularExpression(r"\b%s\b" % kwd), self.keywordFormat)
                       for kwd in self.keywords] + \
-                     [(QRegExp(r"\bdef\s+([A-Za-z_]+[A-Za-z0-9_]+)\s*\("),
+                     [(QRegularExpression(r"\bdef\s+([A-Za-z_]+[A-Za-z0-9_]+)\s*\("),
                        self.defFormat),
-                      (QRegExp(r"\bclass\s+([A-Za-z_]+[A-Za-z0-9_]+)\s*\("),
+                      (QRegularExpression(r"\bclass\s+([A-Za-z_]+[A-Za-z0-9_]+)\s*\("),
                        self.defFormat),
-                      (QRegExp(r"'.*'"), self.stringFormat),
-                      (QRegExp(r'".*"'), self.stringFormat),
-                      (QRegExp(r"#.*"), self.commentFormat),
-                      (QRegExp(r"@[A-Za-z_]+[A-Za-z0-9_]+"),
+                      (QRegularExpression(r"'.*'"), self.stringFormat),
+                      (QRegularExpression(r'".*"'), self.stringFormat),
+                      (QRegularExpression(r"#.*"), self.commentFormat),
+                      (QRegularExpression(r"@[A-Za-z_]+[A-Za-z0-9_]+"),
                        self.decoratorFormat)]
 
-        self.multilineStart = QRegExp(r"(''')|" + r'(""")')
-        self.multilineEnd = QRegExp(r"(''')|" + r'(""")')
+        self.multilineStart = QRegularExpression(r"(''')|" + r'(""")')
+        self.multilineEnd = QRegularExpression(r"(''')|" + r'(""")')
 
         super().__init__(parent)
 
     def highlightBlock(self, text):
         for pattern, format in self.rules:
-            exp = QRegExp(pattern)
+            exp = QRegularExpression(pattern)
             index = exp.indexIn(text)
             while index >= 0:
                 length = exp.matchedLength()
@@ -81,7 +81,7 @@ class PythonSyntaxHighlighter(QtGui.QSyntaxHighlighter):
                                 3)
 
 
-class PythonScriptEditor(QtWidgets.QPlainTextEdit):
+class PythonScriptEditor(QPlainTextEdit):
     INDENT = 4
 
     def lastLine(self):
@@ -116,9 +116,9 @@ class PythonScriptEditor(QtWidgets.QPlainTextEdit):
             super().keyPressEvent(event)
 
 
-class PythonConsole(QtWidgets.QPlainTextEdit, code.InteractiveConsole):
+class PythonConsole(QPlainTextEdit, code.InteractiveConsole):
     def __init__(self, locals=None, parent=None):
-        QtWidgets.QPlainTextEdit.__init__(self, parent)
+        QPlainTextEdit.__init__(self, parent)
         code.InteractiveConsole.__init__(self, locals)
         self.history, self.historyInd = [""], 0
         self.loop = self.interact()
@@ -221,9 +221,9 @@ class PythonConsole(QtWidgets.QPlainTextEdit, code.InteractiveConsole):
             self.complete()
         elif event.key() in [Qt.Key_Left, Qt.Key_Backspace]:
             if self.textCursor().position() > self.newPromptPos:
-                QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
+                QPlainTextEdit.keyPressEvent(self, event)
         else:
-            QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
+            QPlainTextEdit.keyPressEvent(self, event)
 
     def historyUp(self):
         self.setLine(self.history[self.historyInd])
@@ -301,7 +301,7 @@ class Script(object):
         self.filename = filename
 
 
-class ScriptItemDelegate(QtWidgets.QStyledItemDelegate):
+class ScriptItemDelegate(QStyledItemDelegate):
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -315,13 +315,13 @@ class ScriptItemDelegate(QtWidgets.QStyledItemDelegate):
         script = index.data(Qt.DisplayRole)
 
         if script.flags & Script.Modified:
-            option = QtWidgets.QStyleOptionViewItem(option)
+            option = QStyleOptionViewItem(option)
             option.palette.setColor(QPalette.Text, QColor(Qt.red))
             option.palette.setColor(QPalette.Highlight, QColor(Qt.darkRed))
         super().paint(painter, option, index)
 
     def createEditor(self, parent, option, index):
-        return QtWidgets.QLineEdit(parent)
+        return QLineEdit(parent)
 
     def setEditorData(self, editor, index):
         script = index.data(Qt.DisplayRole)

@@ -2,9 +2,9 @@ import os, numpy
 
 from silx.gui.plot import Plot2D
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QLabel, QSizePolicy
-from PyQt5.QtGui import QPixmap
+from AnyQt.QtCore import Qt
+from AnyQt.QtWidgets import QMessageBox, QLabel, QSizePolicy
+from AnyQt.QtGui import QPixmap
 
 import orangecanvas.resources as resources
 

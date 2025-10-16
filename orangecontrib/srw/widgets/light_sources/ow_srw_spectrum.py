@@ -2,7 +2,7 @@ import sys, numpy
 from numpy import nan
 import scipy.constants as codata
 
-from PyQt5.QtWidgets import QMessageBox
+from AnyQt.QtWidgets import QMessageBox
 from orangewidget import gui
 from orangewidget.settings import Setting
 from orangewidget.widget import Input, Output

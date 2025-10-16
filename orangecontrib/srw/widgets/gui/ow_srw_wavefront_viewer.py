@@ -8,10 +8,9 @@ try:
 except:
     scikit_loaded = False
 
-from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QPalette, QColor
+from AnyQt.QtCore import Qt, QSettings
+from AnyQt.QtWidgets import QApplication, QWidget, QMessageBox
+from AnyQt.QtGui import QPalette, QColor, QTextCursor
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -138,8 +137,8 @@ class SRWWavefrontViewer(SRWWidget):
             self.set_PlottingRange()
         else:
             self.view_type = 1
-            self.view_type_combo = QtWidgets.QWidget()
-            self.weight_phase_combo = QtWidgets.QWidget()
+            self.view_type_combo = QWidget()
+            self.weight_phase_combo = QWidget()
 
         self.show_view_box = show_view_box
 
@@ -227,9 +226,9 @@ class SRWWavefrontViewer(SRWWidget):
                     self.plot_results(tickets, 80)
 
             except Exception as exception:
-                QtWidgets.QMessageBox.critical(self, "Error",
+                QMessageBox.critical(self, "Error",
                                            str(exception),
-                    QtWidgets.QMessageBox.Ok)
+                    QMessageBox.Ok)
 
                 if self.IS_DEVELOP: raise exception
 
@@ -250,9 +249,9 @@ class SRWWavefrontViewer(SRWWidget):
                     self.plot_results(tickets, 80)
 
             except Exception as exception:
-                QtWidgets.QMessageBox.critical(self, "Error",
+                QMessageBox.critical(self, "Error",
                                            str(exception),
-                    QtWidgets.QMessageBox.Ok)
+                    QMessageBox.Ok)
 
                 if self.IS_DEVELOP: raise exception
         else:
@@ -403,7 +402,7 @@ class SRWWavefrontViewer(SRWWidget):
 
     def writeStdOut(self, text):
         cursor = self.srw_output.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
+        cursor.movePosition(QTextCursor.End)
         cursor.insertText(text)
         self.srw_output.setTextCursor(cursor)
         self.srw_output.ensureCursorVisible()

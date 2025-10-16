@@ -1,7 +1,7 @@
 #TODO: this widget is valid for 1D and 2D wavefronts. Is there a better way to discriminate without duplicating widgets?
 
 import os
-from PyQt5.QtWidgets import QMessageBox
+from AnyQt.QtWidgets import QMessageBox
 
 try:
     from silx.gui.dialog.DataFileDialog import DataFileDialog

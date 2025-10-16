@@ -1,7 +1,7 @@
 import sys
 from numpy import nan
 
-from PyQt5.QtWidgets import QMessageBox
+from AnyQt.QtWidgets import QMessageBox
 from orangewidget import gui
 from orangewidget.settings import Setting
 from orangewidget.widget import Input, Output

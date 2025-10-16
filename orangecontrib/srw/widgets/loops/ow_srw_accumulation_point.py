@@ -3,7 +3,7 @@ import numpy
 from numpy import nan
 from scipy.interpolate import RectBivariateSpline
 
-from PyQt5.QtWidgets import QMessageBox, QInputDialog
+from AnyQt.QtWidgets import QMessageBox, QInputDialog
 
 from orangewidget import gui
 from orangewidget.settings import Setting

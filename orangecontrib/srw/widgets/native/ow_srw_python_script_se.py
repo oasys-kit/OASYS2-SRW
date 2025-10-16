@@ -1,8 +1,7 @@
 import os, sys
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QRect
-from PyQt5.QtWidgets import QApplication, QFileDialog
+from AnyQt.QtCore import QRect
+from AnyQt.QtWidgets import QApplication, QFileDialog, QMessageBox
 
 from orangewidget import gui
 from orangewidget.widget import Input
@@ -39,7 +38,7 @@ class SRWPythonScriptSE(OWWidget):
     def __init__(self):
         super().__init__()
 
-        geom = QApplication.desktop().availableGeometry()
+        geom = QApplication.primaryScreen().geometry()
         self.setGeometry(QRect(round(geom.width()*0.05),
                                round(geom.height()*0.05),
                                round(min(geom.width()*0.98, self.WIDGET_WIDTH)),
@@ -97,9 +96,9 @@ class SRWPythonScriptSE(OWWidget):
                 file.write(str(self.pythonScript.toPlainText()))
                 file.close()
 
-                QtWidgets.QMessageBox.information(self, "QMessageBox.information()",
+                QMessageBox.information(self, "QMessageBox.information()",
                                               "File " + file_name + " written to disk",
-                                              QtWidgets.QMessageBox.Ok)
+                                              QMessageBox.Ok)
 
     @Inputs.srw_data
     def set_input(self, srw_data):

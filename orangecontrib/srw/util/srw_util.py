@@ -1,6 +1,6 @@
 import numpy, decimal
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QGridLayout, QDialog, QVBoxLayout, QDialogButtonBox, QFileDialog
+from AnyQt.QtCore import QSettings
+from AnyQt.QtWidgets import QWidget, QGridLayout, QDialog, QVBoxLayout, QDialogButtonBox, QFileDialog
 
 import h5py, time
 from matplotlib.figure import Figure
@@ -956,7 +956,7 @@ def read_error_profile_file(file_name, separator = '\t', dimension=2):
 #
 ###############################################################
 
-from PyQt5.QtWidgets import QMessageBox
+from AnyQt.QtWidgets import QMessageBox
 
 def showConfirmMessage(message, informative_text, parent=None):
     msgBox = QMessageBox()

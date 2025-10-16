@@ -49,8 +49,8 @@ import sys, numpy
 import os
 import time
 
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QFileDialog, QInputDialog, QMessageBox
+from AnyQt.QtGui import QTextCursor
+from AnyQt.QtWidgets import QFileDialog, QInputDialog, QMessageBox
 
 from orangewidget import gui
 from orangewidget.settings import Setting

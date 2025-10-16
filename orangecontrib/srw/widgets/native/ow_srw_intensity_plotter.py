@@ -2,7 +2,7 @@ __author__ = 'labx'
 
 from numpy import nan, linspace
 
-from PyQt5.QtWidgets import QMessageBox
+from AnyQt.QtWidgets import QMessageBox
 from orangewidget import gui
 from orangewidget.settings import Setting
 from oasys2.widget import gui as oasysgui
