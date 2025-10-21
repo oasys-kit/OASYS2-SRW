@@ -808,8 +808,8 @@ class ShowErrorProfileDialog(QDialog):
 
             sloperms = profiles_simulation.slopes(self.z_values, self.x_coords, self.y_coords, return_only_rms=1)
 
-            title = ' Slope error rms in X direction: %f $\mu$rad' % (sloperms[0]*1e6) + '\n' + \
-                    ' Slope error rms in Y direction: %f $\mu$rad' % (sloperms[1]*1e6) + '\n' + \
+            title = ' Slope error rms in X direction: %f $\\mu$rad' % (sloperms[0]*1e6) + '\n' + \
+                    ' Slope error rms in Y direction: %f $\\mu$rad' % (sloperms[1]*1e6) + '\n' + \
                     ' Figure error rms in X direction: %f nm' % (round(self.z_values[:, 0].std()*1e9, 6)) + '\n' + \
                     ' Figure error rms in Y direction: %f nm' % (round(self.z_values[0, :].std()*1e9, 6))
 
