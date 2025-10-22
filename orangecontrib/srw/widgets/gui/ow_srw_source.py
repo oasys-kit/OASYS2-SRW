@@ -623,7 +623,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         moment_xpxp,\
         moment_yy,\
         moment_yyp,\
-        moment_ypyp = electron_beam.get_moments_all()
+        moment_ypyp = electron_beam.get_moments_all(dispersion=False)
 
         self.moment_xx              = round(moment_xx,   16)
         self.moment_xxp             = round(moment_xxp,  16)
@@ -645,7 +645,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
             self.moment_xp = round(moment_xp, 10)
             self.moment_yp = round(moment_yp, 10)
 
-        x, xp, y, yp                 = electron_beam.get_sigmas_all()
+        x, xp, y, yp                 = electron_beam.get_sigmas_all(dispersion=False)
         ex, ax, bx, ey, ay, by,      = electron_beam.get_twiss_all()
         eta_x, etap_x, eta_y, etap_y = electron_beam.get_dispersion_all()
 
