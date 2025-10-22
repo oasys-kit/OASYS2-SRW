@@ -84,7 +84,7 @@ class Histogram(SRWWidget):
     keywords = ["data", "file", "load", "read"]
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     IMAGE_WIDTH = 878
     IMAGE_HEIGHT = 635

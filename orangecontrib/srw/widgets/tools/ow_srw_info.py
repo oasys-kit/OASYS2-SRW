@@ -24,7 +24,7 @@ class OWSRWInfo(OWWidget):
     keywords = ["info", "syned"]
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 600
     CONTROL_AREA_HEIGHT = 650

@@ -27,7 +27,7 @@ class SRWPythonScriptME(SRWWidget):
     keywords = ["data", "file", "load", "read"]
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     input_srw_data=None
 

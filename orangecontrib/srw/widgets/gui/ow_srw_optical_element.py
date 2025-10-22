@@ -41,12 +41,12 @@ class OWSRWOpticalElement(SRWWavefrontViewer, WidgetDecorator):
     category = "SRW Optical Elements"
 
     class Inputs:
-        srw_data   = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data   = Input("SRW Data", SRWData, default=True, auto_summary=False)
         trigger    = Input("Trigger", TriggerOut, id="Trigger", default=True, auto_summary=False)
         syned_data = WidgetDecorator.syned_input_data(multi_input=True)
 
     class Outputs:
-        srw_data = Output("SRWData", SRWData, id="SRWData", default=True, auto_summary=False)
+        srw_data = Output("SRW Data", SRWData, id="SRWData", default=True, auto_summary=False)
         trigger  = Output("Trigger", TriggerIn, id="Trigger", default=True, auto_summary=False)
 
     oe_name         = None

@@ -74,12 +74,8 @@ class OWMultipleOasysDataConverter(OWWidget):
         preprocessor_data = Input("PreProcessor Data", OasysPreProcessorData, default=True, auto_summary=False)
 
     class Outputs:
-        preprocessor_data = Output(name="PreProcessor Data",
-                                   type=SRWPreProcessorData,
-                                   id="PreProcessor_Data", default=True, auto_summary=False)
-        files = Output(name="Files",
-                       type=list,
-                       id="Files", default=True, auto_summary=False)
+        preprocessor_data = Output(name="PreProcessor Data", type=SRWPreProcessorData, id="PreProcessor_Data", default=True, auto_summary=False)
+        files             = Output(name="Files", type=list,  id="Files", default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 605
 

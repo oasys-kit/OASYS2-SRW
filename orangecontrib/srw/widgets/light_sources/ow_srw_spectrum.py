@@ -39,13 +39,10 @@ class OWSRWSpectrum(SRWWavefrontViewer):
     priority = 5
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     class Outputs:
-        srw_data = Output("SRWData", DataExchangeObject, id="SRWData", default=True, auto_summary=False)
-
-    inputs = [("SRWData", SRWData, "receive_srw_data")]
-
+        srw_data = Output("SRW Data", DataExchangeObject, id="SRWData", default=True, auto_summary=False)
 
     want_main_area=1
 

@@ -33,7 +33,7 @@ class OWSRWWavefrontFileWriter(OWWidget):
     is_automatic_run= Setting(1)
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     input_data = None
 

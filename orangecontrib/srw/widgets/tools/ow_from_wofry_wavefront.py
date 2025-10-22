@@ -26,7 +26,7 @@ class OWFromWofryWavefront2d(OWWidget):
         wofry_data = Input("Wofry Data", object, default=True, auto_summary=False)
 
     class Outputs:
-        srw_data = Output("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Output("SRW Data", SRWData, default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 405
 

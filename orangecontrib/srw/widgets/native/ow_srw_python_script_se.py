@@ -25,7 +25,7 @@ class SRWPythonScriptSE(OWWidget):
     keywords = ["data", "file", "load", "read"]
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     WIDGET_WIDTH = 950
     WIDGET_HEIGHT = 650

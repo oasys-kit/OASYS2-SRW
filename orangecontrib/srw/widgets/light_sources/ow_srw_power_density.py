@@ -36,7 +36,7 @@ class OWSRWPowerDensity(SRWPowerDensityViewer):
     priority = 4
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     want_main_area=1
 

@@ -19,10 +19,10 @@ class OWToWofryWavefront2d(OWWidget):
     keywords = ["wise", "gaussian"]
 
     class Inputs:
-        srw_data = Input("SRWData", SRWData, default=True, auto_summary=False)
+        srw_data = Input("SRW Data", SRWData, default=True, auto_summary=False)
 
     class Outputs:
-        wavefront = Output("GenericWavefront2D", object, default=True, auto_summary=False)
+        wavefront = Output("Generic Wavefront 2D", object, default=True, auto_summary=False)
 
     CONTROL_AREA_WIDTH = 605
 

@@ -37,7 +37,7 @@ class OWWavefrontFileReader(OWWidget):
     data_path = Setting("")
 
     class Outputs:
-        srw_data = Output("SRWData", SRWData, id="SRWData", default=True, auto_summary=False)
+        srw_data = Output("SRW Data", SRWData, id="SRWData", default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__()

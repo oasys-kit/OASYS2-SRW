@@ -39,7 +39,7 @@ class OWSRWGaussianSource(SRWWavefrontViewer, WidgetDecorator):
         trigger    = Input("Trigger", TriggerOut, id="Trigger", default=True, auto_summary=False)
 
     class Outputs:
-        srw_data = Output("SRWData", SRWData, id="SRWData", default=True, auto_summary=False)
+        srw_data = Output("SRW Data", SRWData, id="SRWData", default=True, auto_summary=False)
 
     want_main_area=1
 

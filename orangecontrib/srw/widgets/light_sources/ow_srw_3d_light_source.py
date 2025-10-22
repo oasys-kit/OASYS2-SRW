@@ -25,7 +25,7 @@ class OWSRW3DLightSource(OWSRWSource):
     priority = 100
 
     class Inputs:
-        exchange_data = MultiInput("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
+        exchange_data = MultiInput("Exchange Data", DataExchangeObject, default=True, auto_summary=False)
         syned_data    = WidgetDecorator.syned_input_data(multi_input=True)
         trigger       = Input("Trigger", TriggerOut, id="Trigger", default=True, auto_summary=False)
 

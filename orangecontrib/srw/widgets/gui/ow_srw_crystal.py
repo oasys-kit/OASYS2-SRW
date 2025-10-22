@@ -24,7 +24,7 @@ class OWSRWCrystal(OWSRWOpticalElement):
     class Inputs:
         srw_data      = OWSRWOpticalElement.Inputs.srw_data
         trigger       = OWSRWOpticalElement.Inputs.trigger
-        exchange_data = MultiInput("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
+        exchange_data = MultiInput("Exchange Data", DataExchangeObject, default=True, auto_summary=False)
         syned_data    = OWSRWOpticalElement.Inputs.syned_data
 
     d_spacing       = Setting(3.1355)
