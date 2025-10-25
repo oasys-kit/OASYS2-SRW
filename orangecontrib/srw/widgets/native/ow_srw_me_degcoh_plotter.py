@@ -3,6 +3,8 @@ __author__ = 'labx'
 from numpy import nan
 
 from AnyQt.QtWidgets import QMessageBox
+
+from oasys2.widget.gui import Styles
 from orangewidget import gui
 from orangewidget.settings import Setting
 from oasys2.widget import gui as oasysgui
@@ -26,7 +28,7 @@ class OWSRWDegCohPlotter(SRWWavefrontViewer):
 
     want_main_area=1
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT = 615
 
     calculation = Setting(0)
     
@@ -46,10 +48,10 @@ class OWSRWDegCohPlotter(SRWWavefrontViewer):
 
         self.general_options_box.setVisible(False)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Load SRW Files", callback=self.plot_degcoh)
-        button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
+        button.setStyleSheet(Styles.button_blue)
 
         gui.separator(self.controlArea)
 

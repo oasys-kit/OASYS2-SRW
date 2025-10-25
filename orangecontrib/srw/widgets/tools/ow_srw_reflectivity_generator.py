@@ -7,6 +7,7 @@ from AnyQt.QtWidgets import QMessageBox, QLabel, QSizePolicy
 from AnyQt.QtGui import QPixmap
 
 import orangecanvas.resources as resources
+from oasys2.widget.gui import Styles
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -57,7 +58,7 @@ class OWReflectivityGenerator(SRWWidget):
     energy_single_value = Setting(0.0)
     angle_single_value = Setting(0.0)
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT = 615
     CONTROL_AREA_WIDTH = 405
 
     usage_path = os.path.join(resources.package_dirname("orangecontrib.srw.widgets.gui"), "misc", "reflectivity_generator_usage.png")
@@ -70,13 +71,13 @@ class OWReflectivityGenerator(SRWWidget):
 
         self.clear_tabs()
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Generate Reflectivity File", callback=self.generate_reflectivity_file)
-        button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
+        button.setStyleSheet(Styles.button_blue)
 
         button = gui.button(button_box, self, "Reset Fields", callback=self.callResetSettings)
-        button.setStyleSheet("color: darkred; font-weight: bold; font-style: italic; height: 45px; width: 150px;")
+        button.setStyleSheet(Styles.button_red)
 
         gui.separator(self.controlArea)
 

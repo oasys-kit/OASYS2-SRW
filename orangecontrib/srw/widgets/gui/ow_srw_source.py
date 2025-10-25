@@ -12,7 +12,7 @@ from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
 from oasys2.widget.util.widget_util import EmittingStream
 from oasys2.widget.util.widget_objects import TriggerOut
-from oasys2.widget.gui import ConfirmDialog
+from oasys2.widget.gui import ConfirmDialog, Styles
 
 from syned.beamline.optical_elements.absorbers.slit import Slit
 from syned.storage_ring.light_source import ElectronBeam, LightSource
@@ -99,7 +99,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
     wf_use_terminating_terms = Setting(1)
     wf_sampling_factor_for_adjusting_nx_ny = Setting(0.0)
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT = 615
     CONTROL_AREA_WIDTH = 405
 
     def __init__(self):
@@ -109,15 +109,13 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         self.runaction.triggered.connect(self.runSRWSource)
         self.addAction(self.runaction)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Run SRW Source", callback=self.runSRWSource)
-        button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
+        button.setStyleSheet(Styles.button_blue)
 
         button = gui.button(button_box, self, "Reset Fields", callback=self.callResetSettings)
-        button.setStyleSheet("color: darkred; font-weight: bold; font-style: italic; height: 45px; width: 150px;")
-
-        gui.separator(self.controlArea)
+        button.setStyleSheet(Styles.button_red)
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 

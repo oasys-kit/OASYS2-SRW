@@ -26,7 +26,7 @@ class OWSRWIntensityPlotter(SRWWavefrontViewer):
 
     want_main_area=1
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT = 615
 
     intensity_file_name = Setting("<file_intensity>.dat")
 
@@ -44,7 +44,7 @@ class OWSRWIntensityPlotter(SRWWavefrontViewer):
 
         self.general_options_box.setVisible(False)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Load SRW File", callback=self.plot_intensity)
         button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")

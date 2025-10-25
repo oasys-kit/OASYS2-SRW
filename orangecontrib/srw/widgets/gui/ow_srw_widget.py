@@ -7,6 +7,7 @@ from AnyQt.QtWidgets import QApplication
 from AnyQt.QtCore import QRect
 
 from oasys2.widget.gui import ConfirmDialog
+import oasys2.widget.gui as oasysgui
 
 class SRWWidget(OWWidget, openclass=True):
 
@@ -19,10 +20,10 @@ class SRWWidget(OWWidget, openclass=True):
     info_id = 0
 
     MAX_WIDTH = 1320
-    MAX_HEIGHT = 700
+    MAX_HEIGHT = 720
 
     CONTROL_AREA_WIDTH = 405
-    TABS_AREA_HEIGHT = 560
+    TABS_AREA_HEIGHT   = 615
 
     srw_live_propagation_mode = "Unknown"
 
@@ -40,7 +41,7 @@ class SRWWidget(OWWidget, openclass=True):
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 
-        self.general_options_box = gui.widgetBox(self.controlArea, "General Options", addSpace=True, orientation="horizontal")
+        self.general_options_box = oasysgui.widgetBox(self.controlArea, "General Options", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
         self.general_options_box.setVisible(show_general_option_box)
 
         if show_automatic_box :

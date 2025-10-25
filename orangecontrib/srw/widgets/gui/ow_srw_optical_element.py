@@ -14,7 +14,7 @@ from orangewidget.widget import Input, Output
 from oasys2.widget.widget import OWAction
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util import congruence
-from oasys2.widget.gui import ConfirmDialog
+from oasys2.widget.gui import ConfirmDialog, Styles
 from oasys2.widget.util.widget_objects import TriggerIn, TriggerOut
 
 from syned.widget.widget_decorator import WidgetDecorator
@@ -135,7 +135,7 @@ class OWSRWOpticalElement(SRWWavefrontViewer, WidgetDecorator):
     check_positive_distances = True
     has_displacement_tab=True
 
-    TABS_AREA_HEIGHT = 555
+    TABS_AREA_HEIGHT   = 555
     CONTROL_AREA_WIDTH = 405
 
     def __init__(self, has_orientation_angles=True, azimuth_hor_vert=False, has_p=True, has_q=True, check_positive_distances=True, has_oe_wavefront_propagation_parameters_tab=True, has_displacement_tab=True):
@@ -149,20 +149,17 @@ class OWSRWOpticalElement(SRWWavefrontViewer, WidgetDecorator):
         self.has_oe_wavefront_propagation_parameters_tab = has_oe_wavefront_propagation_parameters_tab
         self.has_displacement_tab=has_displacement_tab
 
-
         self.runaction = OWAction("Propagate Wavefront", self)
         self.runaction.triggered.connect(self.propagate_wavefront)
         self.addAction(self.runaction)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Propagate Wavefront", callback=self.propagate_wavefront)
-        button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
+        button.setStyleSheet(Styles.button_blue)
 
         button = gui.button(button_box, self, "Reset Fields", callback=self.callResetSettings)
-        button.setStyleSheet("color: darkred; font-weight: bold; font-style: italic; height: 45px; width: 150px;")
-
-        gui.separator(self.controlArea)
+        button.setStyleSheet(Styles.button_red)
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 
@@ -202,7 +199,7 @@ class OWSRWOpticalElement(SRWWavefrontViewer, WidgetDecorator):
         self.draw_specific_box()
 
         self.tabs_prop_setting = oasysgui.tabWidget(self.tab_pro)
-        self.tabs_prop_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-10)
+        self.tabs_prop_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-17)
 
         if self.has_p: self.tab_drift_before = oasysgui.createTabPage(self.tabs_prop_setting, "Drift Space Before")
         if self.has_oe_wavefront_propagation_parameters_tab: self.tab_oe = oasysgui.createTabPage(self.tabs_prop_setting, "Optical Element")

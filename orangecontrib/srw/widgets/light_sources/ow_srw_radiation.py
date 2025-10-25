@@ -3,6 +3,8 @@ from numpy import nan
 import scipy.constants as codata
 
 from AnyQt.QtWidgets import QMessageBox
+
+from oasys2.widget.gui import Styles
 from orangewidget import gui
 from orangewidget.settings import Setting
 from orangewidget.widget import Input
@@ -82,7 +84,7 @@ class OWSRWRadiation(SRWPowerDensityViewer):
 
     received_light_source = None
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT   = 615
     CONTROL_AREA_WIDTH = 405
 
     def __init__(self, show_automatic_box=False):
@@ -90,15 +92,13 @@ class OWSRWRadiation(SRWPowerDensityViewer):
 
         self.general_options_box.setVisible(False)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Calculate Radiation", callback=self.calculateRadiation)
-        button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
+        button.setStyleSheet(Styles.button_blue)
 
         button = gui.button(button_box, self, "Reset Fields", callback=self.callResetSettings)
-        button.setStyleSheet("color: darkred; font-weight: bold; font-style: italic; height: 45px; width: 150px;")
-
-        gui.separator(self.controlArea)
+        button.setStyleSheet(Styles.button_red)
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 

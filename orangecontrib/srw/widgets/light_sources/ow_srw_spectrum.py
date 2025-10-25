@@ -3,6 +3,8 @@ from numpy import nan
 import scipy.constants as codata
 
 from AnyQt.QtWidgets import QMessageBox
+
+from oasys2.widget.gui import Styles
 from orangewidget import gui
 from orangewidget.settings import Setting
 from orangewidget.widget import Input, Output
@@ -96,7 +98,7 @@ class OWSRWSpectrum(SRWWavefrontViewer):
     received_light_source = None
     received_wavefront = None
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT = 615
     CONTROL_AREA_WIDTH = 405
 
     def __init__(self, show_automatic_box=False):
@@ -108,21 +110,24 @@ class OWSRWSpectrum(SRWWavefrontViewer):
         self.runaction.triggered.connect(self.calculateRadiation)
         self.addAction(self.runaction)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Calculate Spectrum", callback=self.calculateRadiation)
-        button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
+        button.setStyleSheet(Styles.button_blue)
 
         button = gui.button(button_box, self, "Reset Fields", callback=self.callResetSettings)
-        button.setStyleSheet("color: darkred; font-weight: bold; font-style: italic; height: 45px; width: 150px;")
-
-        gui.separator(self.controlArea)
+        button.setStyleSheet(Styles.button_red)
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
+        self.tabs_setting = oasysgui.tabWidget(self.controlArea)
+        self.tabs_setting.setFixedHeight(self.TABS_AREA_HEIGHT)
+        self.tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
 
         # FLUX -------------------------------------------
 
-        spe_box = oasysgui.widgetBox(self.controlArea, "Wavefront Parameters", addSpace=False, orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+        tab_spec = oasysgui.createTabPage(self.tabs_setting, "Spectrum")
+
+        spe_box = oasysgui.widgetBox(tab_spec, "Wavefront Parameters", addSpace=False, orientation="vertical", width=self.CONTROL_AREA_WIDTH-15)
     
         oasysgui.lineEdit(spe_box, self, "spe_photon_energy_min", "Photon Energy Min [eV]", labelWidth=260, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(spe_box, self, "spe_photon_energy_max", "Photon Energy Max [eV]", labelWidth=260, valueType=float, orientation="horizontal")
@@ -146,7 +151,7 @@ class OWSRWSpectrum(SRWWavefrontViewer):
                      items=PolarizationComponent.tuple(), labelWidth=150,
                      sendSelectedValue=False, orientation="horizontal")
 
-        pre_box = oasysgui.widgetBox(self.controlArea, "Precision Parameters", addSpace=False, orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+        pre_box = oasysgui.widgetBox(tab_spec, "Precision Parameters", addSpace=False, orientation="vertical", width=self.CONTROL_AREA_WIDTH-15)
 
         self.tabs_precision = oasysgui.tabWidget(pre_box)
 

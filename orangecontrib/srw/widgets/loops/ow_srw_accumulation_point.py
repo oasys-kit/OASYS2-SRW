@@ -51,7 +51,7 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
 
     want_main_area=1
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT = 615
     is_final_screen = True
 
     last_tickets = None
@@ -80,7 +80,7 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
 
         self.general_options_box.setVisible(False)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         gui.button(button_box, self, "Save Accumulated Data", callback=self.save_cumulated_data, height=45)
         gui.button(button_box, self, "Load Accumulated Data", callback=self.load_cumulated_data, height=45)
@@ -89,8 +89,6 @@ class OWSRWAccumulationPoint(SRWWavefrontViewer):
 
         button = gui.button(button_box, self, "Reset Accumulated Wavefronts", callback=self.reset_accumulation)
         button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
-
-        gui.separator(self.controlArea)
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 

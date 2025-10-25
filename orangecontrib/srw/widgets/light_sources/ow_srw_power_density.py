@@ -76,7 +76,7 @@ class OWSRWPowerDensity(SRWPowerDensityViewer):
 
     received_light_source = None
 
-    TABS_AREA_HEIGHT = 618
+    TABS_AREA_HEIGHT = 615
     CONTROL_AREA_WIDTH = 405
 
     def __init__(self, show_automatic_box=False):
@@ -84,15 +84,13 @@ class OWSRWPowerDensity(SRWPowerDensityViewer):
 
         self.general_options_box.setVisible(False)
 
-        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal", width=self.CONTROL_AREA_WIDTH-5)
 
         button = gui.button(button_box, self, "Calculate Power Density", callback=self.calculateRadiation)
         button.setStyleSheet("color: darkblue; font-weight: bold; height: 45px;")
 
         button = gui.button(button_box, self, "Reset Fields", callback=self.callResetSettings)
         button.setStyleSheet("color: darkred; font-weight: bold; font-style: italic; height: 45px; width: 150px;")
-
-        gui.separator(self.controlArea)
 
         self.controlArea.setFixedWidth(self.CONTROL_AREA_WIDTH)
 
