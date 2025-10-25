@@ -15,8 +15,9 @@ from orangewidget.gui import OWComponent
 
 from oasys2.widget.gui import FigureCanvas3D
 from oasys2.widget import gui
-from oasys2.widget.util.widget_util import get_average, get_sigma, get_fwhm, write_surface_file
+from oasys2.widget.util.widget_util import write_surface_file
 
+from srxraylib.util.histograms import get_average, get_sigma, get_fwhm
 from srxraylib.metrology import profiles_simulation
 
 import matplotlib

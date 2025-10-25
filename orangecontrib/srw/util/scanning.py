@@ -18,7 +18,7 @@ from orangewidget.gui import OWComponent
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.gui import FigureCanvas3D
 from oasys2.widget.util.scanning import HistogramData
-from oasys2.widget.util.widget_util import get_sigma
+from srxraylib.util.histograms import get_sigma
 
 from orangecontrib.srw.util.srw_util import SRWPlot
 
