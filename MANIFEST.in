@@ -2,5 +2,6 @@ recursive-include orangecontrib *.pyx
 recursive-include orangecontrib *.py
 
 recursive-include orangecontrib/srw/widgets *.png *.svg *.ico *.jpg *.bmp
+recursive-include orangecontrib/srw/tutorials *.ows
 
 include README.txt
