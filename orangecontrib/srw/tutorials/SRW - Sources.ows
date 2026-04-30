@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<scheme version="2.0" title="SRW Sources" description="" working_directory="/Users/lrebuffi/Oasys2">
+<scheme version="2.0" title="SRW: Sources" description="" working_directory="/Users/lrebuffi/Oasys2">
 	<nodes>
 		<node id="0" name="Bending Magnet" qualified_name="orangecontrib.srw.widgets.light_sources.ow_srw_bending_magnet.OWSRWBendingMagnet" project_name="OASYS2-SRW" version="" title="Bending Magnet" position="(148.0, 279.0)" />
 		<node id="1" name="Undulator" qualified_name="orangecontrib.srw.widgets.light_sources.ow_srw_undulator.OWSRWUndulator" project_name="OASYS2-SRW" version="" title="Undulator" position="(147.0, 73.0)" />
