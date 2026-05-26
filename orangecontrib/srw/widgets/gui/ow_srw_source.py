@@ -1,6 +1,7 @@
 __author__ = 'labx'
 
 import sys, numpy
+import warnings
 
 from AnyQt.QtWidgets import QMessageBox
 from orangewidget import gui
@@ -331,7 +332,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         if trigger and trigger.new_object == True:
             self.runSRWSource()
 
-    def get_electron_beam(self):
+    def get_electron_beam(self, online:bool=False):
         if self.type_of_initialization == 2:
             electron_beam = SRWElectronBeam(energy_in_GeV=numpy.random.normal(self.electron_energy_in_GeV,
                                                                               self.electron_energy_spread*self.electron_energy_in_GeV),
@@ -368,7 +369,9 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                                              etap_y = self.vertical_etap)
 
         if self._check_dispersion_reset():
-            # Trajectory intialization
+            if not online: self.populate_fields_from_electron_beam(electron_beam)
+
+            # Trajectory initialization
             if self.type_of_initialization == 0: # zero
                 self.moment_x  = 0.0
                 self.moment_y  = 0.0
@@ -387,8 +390,6 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
                                                 self.moment_y,
                                                 self.moment_yp,
                                                 self.moment_z)
-
-            self.populate_fields_from_electron_beam(electron_beam)
 
             print("\n", "Electron Trajectory Initialization:")
             print("X0: ",  self.moment_x)
@@ -611,7 +612,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
     def callback_electron_energy(self):
         pass
 
-    def populate_fields_from_electron_beam(self, electron_beam):
+    def populate_fields_from_electron_beam(self, electron_beam: ElectronBeam, online: bool = False):
         self.electron_energy_in_GeV = electron_beam.energy()
         self.electron_energy_spread = electron_beam._energy_spread
         self.ring_current           = electron_beam.current()
@@ -643,24 +644,31 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
             self.moment_xp = round(moment_xp, 10)
             self.moment_yp = round(moment_yp, 10)
 
-        x, xp, y, yp                 = electron_beam.get_sigmas_all(dispersion=False)
-        ex, ax, bx, ey, ay, by,      = electron_beam.get_twiss_all()
-        eta_x, etap_x, eta_y, etap_y = electron_beam.get_dispersion_all()
+        if not (online and self.type_of_properties == 1):
+            x, xp, y, yp  = electron_beam.get_sigmas_all(dispersion=False)
 
-        self.electron_beam_size_h       = round(x, 10)
-        self.electron_beam_size_v       = round(y, 10)
-        self.electron_beam_divergence_h = round(xp, 10)
-        self.electron_beam_divergence_v = round(yp, 10)
-        self.horizontal_emittance       = round(ex, 16)
-        self.vertical_emittance         = round(ey, 16)
-        self.horizontal_alpha           = round(ax, 6)
-        self.vertical_alpha             = round(ay, 6)
-        self.horizontal_beta            = round(bx, 6)
-        self.vertical_beta              = round(by, 6)
-        self.horizontal_eta             = round(eta_x, 8)
-        self.vertical_eta               = round(eta_y, 8)
-        self.horizontal_etap            = round(etap_x, 8)
-        self.vertical_etap              = round(etap_y, 8)
+            self.electron_beam_size_h       = round(x, 10)
+            self.electron_beam_size_v       = round(y, 10)
+            self.electron_beam_divergence_h = round(xp, 10)
+            self.electron_beam_divergence_v = round(yp, 10)
+
+        if not (online and self.type_of_properties == 2):
+            with warnings.catch_warnings(record=True) as captured_warnings:
+                ex, ax, bx, ey, ay, by,      = electron_beam.get_twiss_all()
+                eta_x, etap_x, eta_y, etap_y = electron_beam.get_dispersion_all()
+
+                for w in captured_warnings:  raise ValueError(f"Wrong input parameters: {w.message}\nConsider choosing 'Zero emittance' Electron Beam Properties. ")
+
+                self.horizontal_emittance       = round(ex, 16)
+                self.vertical_emittance         = round(ey, 16)
+                self.horizontal_alpha           = round(ax, 6)
+                self.vertical_alpha             = round(ay, 6)
+                self.horizontal_beta            = round(bx, 6)
+                self.vertical_beta              = round(by, 6)
+                self.horizontal_eta             = round(eta_x, 8)
+                self.vertical_eta               = round(eta_y, 8)
+                self.horizontal_etap            = round(etap_x, 8)
+                self.vertical_etap              = round(etap_y, 8)
 
     def _check_dispersion_presence(self):
         return self.horizontal_eta != 0.0 or \
@@ -681,7 +689,7 @@ class OWSRWSource(SRWWavefrontViewer, WidgetDecorator):
         try:
             self.check_electron_beam()
             if self._check_dispersion_reset():
-                self.populate_fields_from_electron_beam(self.get_electron_beam())
+                self.populate_fields_from_electron_beam(self.get_electron_beam(online=True), online=True)
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e.args[0]), QMessageBox.Ok)
             if self.IS_DEVELOP: raise e
