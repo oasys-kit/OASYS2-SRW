@@ -22,7 +22,7 @@ from srxraylib.metrology import profiles_simulation
 
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.cm as cm
+from matplotlib.pyplot import get_cmap
 
 cdict_temperature = {'red': ((0.0, 0.0, 0.0),
                              (0.5, 0.0, 0.0),
@@ -45,9 +45,9 @@ cdict_reversed_gray = {'red': ((0.0, 1.0, 1.0),
                        'blue': ((0.0, 1.0, 1.0),
                                 (1.0, 0.0, 0.0))}
 
-cmap_temperature = LinearSegmentedColormap('temperature', cdict_temperature, 256)
+cmap_temperature   = LinearSegmentedColormap('temperature', cdict_temperature, 256)
 cmap_reversed_gray = LinearSegmentedColormap('reversed gray', cdict_reversed_gray, 256)
-cmap_gray = cm.get_cmap("gray")
+cmap_gray          = get_cmap("gray")
 
 class SRWStatisticData:
     def __init__(self, total = 0.0):
