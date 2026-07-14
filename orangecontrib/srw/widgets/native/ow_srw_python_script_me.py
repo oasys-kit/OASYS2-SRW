@@ -68,13 +68,19 @@ class SRWPythonScriptME(SRWWidget):
 
         gui.comboBox(gen_box, self, "_char", label="Calculation",
                      items=["Total Intensity",
-                            "Four Stokes components of Total Intensity",
-                            "Mutual Intensity Cut vs X",
-                            "Mutual Intensity Cut vs Y",
-                            "Mutual Intensity Cuts vs X & Y",
+                            "Four Stokes components of Flux per Unit Surface Area",
+                            "Mutual Intensity Cut (2D) vs X",
+                            "Mutual Intensity Cut (2D) vs Y",
+                            "Mutual Intensity and Degree of Coherence Cuts (2D) vs X & Y",
+                            "Degree of Coherence Cuts (2D) vs X & Y",
+                            "Mutual Intensity / CSD (4D) vs X & Y",
+                            "Coherent Modes and Mutual Intensity / CSD (4D) vs X & Y",
+                            "Coherent Modes",
                             "Total Flux",
+                            "Four Stokes components of Flux",
                             "Total Electric Field",
-                            "Total Intensity, Mutual Intensity Cuts vs X & Y"
+                            "Total Intensity, Mutual Intensity and Degree of Coherence Cuts vs X & Y",
+                            "Total Intensity and Degree of Coherence Cuts vs X & Y"
                             ], labelWidth=70,
                      sendSelectedValue=False, orientation="horizontal")
 
@@ -151,25 +157,31 @@ class SRWPythonScriptME(SRWWidget):
                     raise ValueError("ME Script is not available with this source")
 
                 '''
-                0- Total Intensity, i.e. Flux per Unit Surface Area (s0);
-                1- Four Stokes components of Flux per Unit Surface Area;
-                2- Mutual Intensity Cut vs X;
-                3- Mutual Intensity Cut vs Y;
-                4- Mutual Intensity Cuts and Degree of Coherence vs X & Y;
-                10- Flux
-                20- Electric Field (sum of fields from all macro-electrons, assuming CSR)
-                40- Total Intensity, i.e. Flux per Unit Surface Area (s0), Mutual Intensity Cuts and Degree of Coherence vs X & Y;
+                    0- Total Intensity, i.e. Flux per Unit Surface Area (s0);
+                    1- Four Stokes components of Flux per Unit Surface Area;
+                    2- Mutual Intensity Cut (2D) vs X;
+                    3- Mutual Intensity Cut (2D) vs Y;
+                    4- Mutual Intensity and Degree of Coherence Cuts (2D) vs X & Y;
+                    5- Degree of Coherence Cuts (2D) vs X & Y;
+                    6- Mutual Intensity / Cross-Spectral Density (4D) vs X & Y;
+                    61- Coherent Modes (array of 2D distributions of Electric Field vs X & Y) and Mutual Intensity / Cross-Spectral Density (4D) vs X & Y it is based on;
+                    7- Coherent Modes (array of 2D distributions of Electric Field vs X & Y);
+                    10- Flux
+                    11- Four Stokes components of Flux (?)
+                    20- Electric Field (sum of fields from all macro-electrons, assuming CSR)
+                    40- Total Intensity, i.e. Flux per Unit Surface Area (s0), Mutual Intensity and Degree of Coherence Cuts vs X & Y;
+                    41- Total Intensity, i.e. Flux per Unit Surface Area (s0) and Degree of Coherence Cuts vs X & Y;                
                 '''
                 _char = 0
 
-                if self._char <= 4:
-                    _char = self._char
-                elif self._char == 5:
-                    _char = 10
-                elif self._char == 6:
-                    _char = 20
-                elif self._char == 7:
-                    _char = 40
+                if   self._char <= 6:  _char = self._char
+                elif self._char == 7:  _char = 61
+                elif self._char == 8:  _char = 7
+                elif self._char == 9:  _char = 10
+                elif self._char == 10: _char = 11
+                elif self._char == 11: _char = 20
+                elif self._char == 12: _char = 40
+                elif self._char == 13: _char = 41
 
                 parameters = [self.sampFactNxNyForProp,
                               self.nMacroElec,
