@@ -229,9 +229,9 @@ class Scan3DHistoWidget(AbstractScanHistoWidget):
             zmin = numpy.min(self.zz)
             zmax = numpy.max(self.zz)
 
-            self.axis.set_xlim(xmin,xmax)
-            self.axis.set_ylim(ymin,ymax)
-            self.axis.set_zlim(zmin,zmax)
+            if xmin < xmax: self.axis.set_xlim(xmin,xmax)
+            if ymin < ymax: self.axis.set_ylim(ymin,ymax)
+            if zmin < zmax: self.axis.set_zlim(zmin,zmax)
 
         self.axis.mouse_init()
 
@@ -284,7 +284,7 @@ class Scan3DHistoWidget(AbstractScanHistoWidget):
             self.colorbar = self.figure.colorbar(lc) # add colorbar, as the normalization is the same for all,
 
         self.colorbar.update_normal(lc)
-        self.colorbar.draw_all()
+        self.figure.canvas.draw_idle()
 
 class ScanHistoWidget(AbstractScanHistoWidget):
 
