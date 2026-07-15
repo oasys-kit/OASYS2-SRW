@@ -8,15 +8,15 @@ from oasys2.widget.util import congruence
 from oasys2.widget.util.widget_objects import OasysThicknessErrorsData
 from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from wofrysrw.beamline.optical_elements.other.srw_crl import CRLShape, PlaneOfFocusing, SRWCRL
+from wofrysrw.beamline.optical_elements.other.srw_crl_barc4ro import CRLShape, PlaneOfFocusing, SRWCRLBarc4ro
 
 from orangecontrib.srw.widgets.gui.ow_srw_optical_element import OWSRWOpticalElement
 from orangecontrib.srw.util.srw_util import get_absorption_parameters
 
-class OWSRWCRL(OWSRWOpticalElement):
-    name = "CRL"
-    description = "SRW: CRL"
-    icon = "icons/crl.png"
+class OWSRWCRLBarc4ro(OWSRWOpticalElement):
+    name = "Barc4ro CRL"
+    description = "SRW: Barc4RO CRL "
+    icon = "icons/barc4ro_crl.png"
     priority = 16
 
     class Inputs:
@@ -37,11 +37,22 @@ class OWSRWCRL(OWSRWOpticalElement):
     wall_thickness = Setting(30)
     horizontal_center_coordinate = Setting(0.0)
     vertical_center_coordinate = Setting(0.0)
-    void_center_coordinates = Setting("")
     horizontal_points = Setting(1001)
     vertical_points = Setting(1001)
     angle_of_rotation_about_horizontal_axis = Setting(0.0)
     angle_of_rotation_about_vertical_axis   = Setting(0.0)
+
+    lateral_offset_in_horizontal_axis_ffs = Setting(0.0)
+    lateral_offset_in_vertical_axis_ffs = Setting(0.0)
+    angle_of_rotation_about_horizontal_axis_ffs = Setting(0.0)
+    angle_of_rotation_about_vertical_axis_ffs = Setting(0.0)
+    excess_penetration_ffs = Setting(0.0)
+    lateral_offset_in_horizontal_axis_bfs = Setting(0.0)
+    lateral_offset_in_vertical_axis_bfs = Setting(0.0)
+    angle_of_rotation_about_horizontal_axis_bfs = Setting(0.0)
+    angle_of_rotation_about_vertical_axis_bfs = Setting(0.0)
+    excess_penetration_bfs = Setting(0.0)
+
     has_thickness_error = Setting(0)
     crl_error_profiles = Setting([])
     crl_scaling_factor = Setting(1.0)
@@ -88,8 +99,6 @@ class OWSRWCRL(OWSRWOpticalElement):
         oasysgui.lineEdit(box, self, "horizontal_center_coordinate", "Center Coord. H [m]", labelWidth=130, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(box, self, "vertical_center_coordinate", "V [m]", labelWidth=90, valueType=float, orientation="horizontal")
 
-        oasysgui.lineEdit(tab_bas, self, "void_center_coordinates", "Void center coordinates [m] (x1, y1, r1, x2, y2, r2, ...)", labelWidth=350, valueType=str, orientation="vertical")
-
         gui.separator(tab_bas)
 
         tab_thick = oasysgui.createTabPage(tabs_crl, "Thickness Error")
@@ -114,8 +123,19 @@ class OWSRWCRL(OWSRWOpticalElement):
 
         tab_displ = oasysgui.createTabPage(tabs_crl, "Displacements")
 
-        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_horizontal_axis", "Angle Rotation about H axis [rad]", labelWidth=260, valueType=float, orientation="horizontal")
-        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_vertical_axis", "Angle Rotation about V axis [rad]", labelWidth=260, valueType=float, orientation="horizontal")
+
+        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_horizontal_axis", "Angle Rotation about H axis [rad]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_vertical_axis", "Angle Rotation about V axis [rad]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "lateral_offset_in_horizontal_axis_ffs", "Lateral offset in the H axis of the F.F.S. [m]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "lateral_offset_in_vertical_axis_ffs", "Lateral offset in the V axis of the F.F.S. [m]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_horizontal_axis_ffs", "Angle Rotation of the F.F.S. about H axis [rad]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_vertical_axis_ffs", "Angle Rotation of the F.F.S.  about V axis [rad]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "excess_penetration_ffs", "Excess penetration of the F.F.S. [m]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "lateral_offset_in_horizontal_axis_bfs", "Lateral offset in the H axis of the B.F.S. [m]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "lateral_offset_in_vertical_axis_bfs", "Lateral offset in the V axis of the B.F.S. [m]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_horizontal_axis_bfs", "Angle Rotation of the B.F.S. about H axis [rad]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "angle_of_rotation_about_vertical_axis_bfs", "Angle Rotation of the B.F.S.  about V axis [rad]", labelWidth=275, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(tab_displ, self, "excess_penetration_bfs", "Excess penetration of the B.F.S. [m]", labelWidth=275, valueType=float, orientation="horizontal")
 
     def refresh_files_text_area(self):
         text = ""
@@ -167,40 +187,36 @@ class OWSRWCRL(OWSRWOpticalElement):
             delta              = self.refractive_index
             attenuation_length = self.attenuation_length
 
-        return SRWCRL(name=self.oe_name,
-                      plane_of_focusing=self.plane_of_focusing+1,
-                      delta=delta,
-                      attenuation_length=attenuation_length,
-                      shape=self.shape+1,
-                      horizontal_aperture_size=self.diameter*1e-6,
-                      vertical_aperture_size=self.diameter*1e-6,
-                      radius_of_curvature=self.radius_of_curvature*1e-6,
-                      number_of_lenses=self.number_of_lenses,
-                      wall_thickness=self.wall_thickness*1e-6,
-                      horizontal_center_coordinate=self.horizontal_center_coordinate,
-                      vertical_center_coordinate=self.vertical_center_coordinate,
-                      void_center_coordinates=self.parse_void_center_coordinates(),
-                      initial_photon_energy=energy,
-                      final_photon_energy=energy,
-                      horizontal_points=self.horizontal_points,
-                      vertical_points=self.vertical_points,
-                      angle_of_rotation_about_horizontal_axis=self.angle_of_rotation_about_horizontal_axis,
-                      angle_of_rotation_about_vertical_axis=self.angle_of_rotation_about_vertical_axis,
-                      thickness_error_profile_files=None if self.has_thickness_error==0 else self.crl_error_profiles,
-                      scaling_factor=self.crl_scaling_factor)
-
-    def parse_void_center_coordinates(self):
-        if self.void_center_coordinates.strip() == "":
-            return None
-
-        else:
-            void_center_coordinates = []
-            tokens = self.void_center_coordinates.strip().split(",")
-
-            for token in tokens:
-                void_center_coordinates.append(float(token))
-
-            return void_center_coordinates
+        return SRWCRLBarc4ro(name=self.oe_name,
+                             plane_of_focusing=self.plane_of_focusing+1,
+                             delta=delta,
+                             attenuation_length=attenuation_length,
+                             shape=self.shape+1,
+                             horizontal_aperture_size=self.diameter*1e-6,
+                             vertical_aperture_size=self.diameter*1e-6,
+                             radius_of_curvature=self.radius_of_curvature*1e-6,
+                             number_of_lenses=self.number_of_lenses,
+                             wall_thickness=self.wall_thickness*1e-6,
+                             horizontal_center_coordinate=self.horizontal_center_coordinate,
+                             vertical_center_coordinate=self.vertical_center_coordinate,
+                             initial_photon_energy=energy,
+                             final_photon_energy=energy,
+                             horizontal_points=self.horizontal_points,
+                             vertical_points=self.vertical_points,
+                             angle_of_rotation_about_horizontal_axis=self.angle_of_rotation_about_horizontal_axis,
+                             angle_of_rotation_about_vertical_axis=self.angle_of_rotation_about_vertical_axis,
+                             lateral_offset_in_horizontal_axis_ffs=self.lateral_offset_in_horizontal_axis_ffs,
+                             lateral_offset_in_vertical_axis_ffs=self.lateral_offset_in_vertical_axis_ffs,
+                             angle_of_rotation_about_horizontal_axis_ffs=self.angle_of_rotation_about_horizontal_axis_ffs,
+                             angle_of_rotation_about_vertical_axis_ffs=self.angle_of_rotation_about_vertical_axis_ffs,
+                             excess_penetration_ffs=self.excess_penetration_ffs,
+                             lateral_offset_in_horizontal_axis_bfs=self.lateral_offset_in_horizontal_axis_bfs,
+                             lateral_offset_in_vertical_axis_bfs=self.lateral_offset_in_vertical_axis_bfs,
+                             angle_of_rotation_about_horizontal_axis_bfs=self.angle_of_rotation_about_horizontal_axis_bfs,
+                             angle_of_rotation_about_vertical_axis_bfs=self.angle_of_rotation_about_vertical_axis_bfs,
+                             excess_penetration_bfs=self.excess_penetration_bfs,
+                             thickness_error_profile_files=None if self.has_thickness_error==0 else self.crl_error_profiles,
+                             scaling_factor=self.crl_scaling_factor)
 
     def check_data(self):
         super().check_data()
