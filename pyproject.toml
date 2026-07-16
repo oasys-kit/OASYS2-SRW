@@ -1,3 +1,77 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "OASYS2-SRW"
+version = "1.0.25"
+description = "SRW in OASYS2"
+readme = "README.md"
+
+# TODO: confirm the exact GPL variant (the old setup.py just said 'GPLv3',
+# and there is no License:: classifier here to cross-check against).
+license = "GPL-3.0-or-later"
+# license = "GPL-3.0-only"      # <- if the source headers say "version 3" only
+# license-files = ["LICENSE"]   # <- uncomment if a LICENSE file exists in the repo
+
+authors = [
+    { name = "Luca Rebuffi", email = "lrebuffi@anl.gov" },
+]
+keywords = [
+    "waveoptics",
+    "simulator",
+    "oasys2",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Environment :: Console",
+    "Environment :: Plugins",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+]
+dependencies = [
+    "oasys2>=0.0.54",
+    "syned-gui-2>=1.0.4",
+    "scikit-image",
+    "wofrysrw>=1.1.43",
+]
+
+[project.urls]
+Homepage = "https://github.com/lucarebuffi/OASYS-SRW"
+Download = "https://github.com/lucarebuffi/OASYS-SRW"
+
+[project.entry-points."oasys2.addons"]
+SRW = "orangecontrib.srw"
+
+[project.entry-points."oasys2.widgets"]
+"SRW Light Sources" = "orangecontrib.srw.widgets.light_sources"
+"SRW Optical Elements" = "orangecontrib.srw.widgets.optical_elements"
+"SRW Tools" = "orangecontrib.srw.widgets.tools"
+"SRW Loops" = "orangecontrib.srw.widgets.loops"
+"SRW Native" = "orangecontrib.srw.widgets.native"
+
+[project.entry-points."oasys2.menus"]
+srwmenu = "orangecontrib.srw.menu"
+
+[project.entry-points."oasys2.tutorials"]
+srwtutorials = "orangecontrib.srw.tutorials"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]
+# namespaces = false replicates the old find_packages() behaviour exactly.
+# Under pyproject.toml, setuptools DEFAULTS this to true (= find_namespace_packages),
+# which would sweep in non-package dirs such as .../icons and .../misc.
+namespaces = false
+
+[tool.setuptools.package-data]
+"orangecontrib.srw.widgets.light_sources" = ["icons/*.png", "icons/*.jpg", "misc/*.png"]
+"orangecontrib.srw.widgets.optical_elements" = ["icons/*.png", "icons/*.jpg"]
+"orangecontrib.srw.widgets.tools" = ["icons/*.png", "icons/*.jpg"]
+"orangecontrib.srw.widgets.native" = ["icons/*.png", "icons/*.jpg"]
+"orangecontrib.srw.widgets.loops" = ["icons/*.png", "icons/*.jpg"]
+"orangecontrib.srw.tutorials" = ["*.ows"]
